@@ -1,0 +1,187 @@
+CPU Design rev 0.7
+merged insructions and refactoring
+
+8 bit bus
+
+flags: Zero, Carry, Parity, Interrupt, Format
+
+info:
+      All short memory instructions use Page1 (Data)
+      Format flag when 0 would store/load words, when 1 would store/load bytes
+
+registers:
+      Accumulator 16 bit register for arithmetic operations A
+      ProgramCounter    16 bit instruction pointer		    P
+      StackPointer      16 bit stack pointer (USES Page 1)        S0
+      VariablePointer   16 bit stack pointer (USES Page 1)        S1
+      StackBasePtr      16 bit stack base (USES Page 1)		S2
+      Page 0		8 bit code segment		 P0
+      Page 1		8 bit data/stack segment		      P1
+      RBank       16*16 bit register bank		       Rn
+
+		      only used in loops, it contains the old ProgramCounter
+		      and new ProgramCounter
+		      like in a rep it does:
+		      case REP:
+		      ++__LOC
+		      __LADR[__LOC][0] = ProgramCounter
+		      __LADR[__LOC][1] = find_end_of_rep(ProgramCounter)
+		      while ZeroFlag == false
+		 if __LADR[__LOC][0] == __LADR[__LOC][1]
+		       jump __LADR[__LOC][0]
+		 else
+		       executeNext()
+		      jump __LADR[__LOC][1]
+		      --__LOC
+		      }
+      LoopAddr    256*2*16 bit instruction pointer          __LADR
+      LoopCnt		8 bit current loop (for nesting)          __LOC
+
+	--- ISA ---
+0x00-0F	STACK
+	0x00  PUSH A,  Sn    [--S[n]] = A
+	0x01  POP  A,  Sn   	A = [S[n]++]
+	0x02  POKE A,  Sn    [S[n]] = A
+	0x03  PEEK A,  Sn		A = [S[n]]
+	
+	0x04  PUSH Rn, Sn
+	0x05  POP  Rn, Sn
+	0x06  POKE Rn, Sn
+	0x07  PEEK Rn, Sn
+
+	0x08  PUSH i8
+	0x09  PUSH i16
+
+	0x0A  PUSH P0
+	0x0B  PUSH P1
+	0x0C  POP  P1
+
+	0x0D  PUSH F
+	0x0E  POP  F
+	
+0x10-15	EXCHANGES
+	0x10  XC A,   A
+	0x11  XC Rn0, Rn1
+	0x12  XC Rn,  Sn
+	0x13  XC Sn1, Sn2
+	0x14  XC A,   Sn
+	0x15  XC A,   Rn
+
+0x16-2A	BASIC DATA MANIPULATION
+	0x16  STORE A,  a16
+	0x17  STORE Rn, a16
+	0x18  LOAD  A,  a16
+	0x19  LOAD  Rn, a16
+
+	0x1A  FAR STORE A,  a24
+	0x1B  FAR STORE Rn, a24
+	0x1C  FAR LOAD  A,  a24
+	0x1D  FAR LOAD  Rn, a24
+
+	0x1E  SET a16
+	0x1F  GET a16
+
+	0x20  BLCKGET a16, n8
+	0x21  BLCKSET a16, n8
+
+	0x22  LD A,  Rn	A = R[n]
+	0x23  LD A,  Sn	A = S[n]
+	0x24  LD Rn, A		rest can be infered
+	0x25  LD Sn, A
+	0x26  LD Rn, Sn
+	0x27  LD Sn, Rn
+
+	0x28  LDI Rn, i16
+	0x29  LDI Sn, i16
+	0x2A  LDI A, i16
+
+0x2B-38	ARITHMETIC OPERATIONS
+	0x2B  ADD $i16		A += [IMM]
+	0x2E  ADD $Sn		A += [S[n]]
+	0x2F  ADD $Rn		A += [R[n]]
+	0x30  ADD i16		A += IMM
+	0x31  ADD Sn		A += S[n]
+	0x32  ADD Rn		A += R[n]
+
+	0x2B  SUB $i16		A -= [IMM]
+	0x2E  SUB $Sn		A -= [S[n]]
+	0x2F  SUB $Rn		A -= [R[n]]
+	0x30  SUB i16		A -= IMM
+	0x31  SUB Sn		A -= S[n]
+	0x32  SUB Rn		A -= R[n]
+
+	0x33  CMP $i16		A - [IMM]
+	0x34  CMP $Sn		A - [S[n]]
+	0x35  CMP $Rn		A - [R[n]]
+	0x36  CMP i16		A - IMM
+	0x37  CMP Sn		A - S[n]
+	0x38  CMP Rn		A - R[n]
+
+0x39-53	LOGICAL OPERATIONS
+	0x39	NOT A				A = ~A;
+	0x3A	NEG A				A = -A;
+
+	0x3B	NOT Rn			A = ~Rn;
+	0x3C	NEG Rn			A = -Rn;
+
+	0x3D	NOT $Rn			[R[n]] = ~[R[n]]
+	0x3E	NEG $Rn			[R[n]] = -[R[n]]
+
+	0x40	NOT $Sn			[S[n]] = ~[S[n]]
+	0x41	NEG $Sn			[S[n]] = -[S[n]]
+
+	0x43	AND $i16			A &= [i16]
+	0x46	AND $Rn			A &= [R[n]]
+	0x47	AND $Sn			A &= [S[n]]
+	0x48	AND i16			A &= i16
+	0x49	AND Rn			A &= R[n]
+
+	0x4A	OR $i16			A |= [i16]
+	0x4B	OR $Rn			A |= [R[n]]
+	0x4C	OR $Sn			A |= [S[n]]
+	0x4D	OR i16			A |= i16
+	0x4E	OR Rn				A |= R[n]
+
+	0x4F	XOR $i16			A ^= [i16]
+	0x50	XOR $Rn			A ^= [R[n]]
+	0x51	XOR $Sn			A ^= [S[n]]
+	0x52	XOR i16			A ^= i16
+	0x53	XOR Rn			A ^= R[n]
+
+0x54-69	JUMPING AND CALLING/RET
+	0x54  JUMP a16
+	0x55  JUMP Sn
+	0x56  FAR JUMP a24
+	0x57  RELATIVE JUMP i8
+	0x58  RELATIVE JMZ i8
+	0x59  RELATIVE JMC i8
+	0x5A  JMZ  a16
+	0x5B  JMC  a16
+	0x5C  JP   a16
+	0x5D  JNZ  a16
+	0x5E  JNC  a16
+	0x5F  JNP  a16
+	0x60  CALL a16
+	0x61  FAR CALL a24
+	0x62  CALZ a16
+	0x63  CALC a16
+	0x64  CALL Sn
+	0x66  RET
+	0x67  FAR RET
+	0x68  RETZ
+	0x69  RETC
+
+0x6A-F0 OTHER
+	0x6A  SETFORMAT i8
+	0x6B  OUT
+	0x6C  IN
+	0x6D  INT i8
+	0x6E  INT Rn
+	0x6F  CLI
+	0x70  STI
+	0x71	LD Rn0, $Rn1	R[n0] = [R[n1]]
+	0x71	LD $Rn0, Rn1	[R[n1]] = R[n0]
+
+0xF0-F1	LOOPS
+	0xF0  REP
+	0xF1  END

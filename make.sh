@@ -1,0 +1,1 @@
+g++ "src/main.cpp" -o "bin/main" -O3 -Wall -Wextra -Werror -Wpedantic

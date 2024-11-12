@@ -1,0 +1,15 @@
+{
+	"files.associations": {
+		"*.asm": "asm-intel-x86-generic",
+		"*.w32asm": "asm-joshua-w32-generic",
+		"*.qoppa": "qoppa",
+		"iostream": "cpp",
+		"vector": "cpp",
+		"system_error": "cpp",
+		"type_traits": "cpp",
+		"xlocmon": "cpp",
+		"xtr1common": "cpp",
+		"xutility": "cpp",
+		"ostream": "cpp"
+	}
+}
