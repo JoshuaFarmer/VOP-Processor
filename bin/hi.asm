@@ -28,5 +28,7 @@ _inf:
 	jmp %_inf
 	nop
 msg:
-	ds "Hello, World!"
+;	ds "Hello, World!"
+;	ds " the the the the the"
+	ds "this is a test of my simple put_string function wow look at this! its like 256x160 with 8x8 font, (32x20 chars)"
 	db 0
