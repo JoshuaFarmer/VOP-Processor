@@ -110,13 +110,21 @@ int main(int argc, char* argv[]) {
 				quit = true;
 			}
 		}
-
 		
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
-		cpu.executeNext();
-		draw_buffer();
+		
+		if (cpu.PC > 512+0xF) {
+			printf("OPCODE: %.2x\n", ram[cpu.PC]);
+			cpu.executeNext();
+			cpu.display();
+			cpu.IO[POWER_OFF_IO] = 0x01;
+		}
 
+		else
+			cpu.executeNext();
+		draw_buffer();
+		
 		if (cpu.IO[SWAP_BUFFERS] == 0x01) {
 			buffbank = !buffbank;
 			cpu.IO[SWAP_BUFFERS] = 0;

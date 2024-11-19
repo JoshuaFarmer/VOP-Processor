@@ -1134,7 +1134,7 @@ U_RET:
 			return;
 		}
 
-		size_t x = fread(ram+off, 1, len, fp);
+		size_t x = fread(&ram[off], 1, len, fp);
 		printf("%lu bytes read\n", x);
 		fclose(fp);
 	}
