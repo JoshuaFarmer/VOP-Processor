@@ -103,19 +103,12 @@ registers:
 	0x31  ADD Sn		A += S[n]
 	0x32  ADD Rn		A += R[n]
 
-	0x2B  SUB $i16		A -= [IMM]
-	0x2E  SUB $Sn		A -= [S[n]]
-	0x2F  SUB $Rn		A -= [R[n]]
-	0x30  SUB i16		A -= IMM
-	0x31  SUB Sn		A -= S[n]
-	0x32  SUB Rn		A -= R[n]
-
-	0x33  CMP $i16		A - [IMM]
-	0x34  CMP $Sn		A - [S[n]]
-	0x35  CMP $Rn		A - [R[n]]
-	0x36  CMP i16		A - IMM
-	0x37  CMP Sn		A - S[n]
-	0x38  CMP Rn		A - R[n]
+	0x33  SUB $i16		A -= [IMM]
+	0x34  SUB $Sn		A -= [S[n]]
+	0x35  SUB $Rn		A -= [R[n]]
+	0x36  SUB i16		A -= IMM
+	0x37  SUB Sn		A -= S[n]
+	0x38  SUB Rn		A -= R[n]
 
 0x39-53	LOGICAL OPERATIONS
 	0x39	NOT A				A = ~A;
@@ -150,7 +143,7 @@ registers:
 
 0x54-69	JUMPING AND CALLING/RET
 	0x54  JUMP a16
-	0x55  JUMP Sn
+	0x55  JUMP Rn
 	0x56  FAR JUMP a24
 	0x57  RELATIVE JUMP i8
 	0x58  RELATIVE JMZ i8
@@ -165,7 +158,7 @@ registers:
 	0x61  FAR CALL a24
 	0x62  CALZ a16
 	0x63  CALC a16
-	0x64  CALL Sn
+	0x64  CALL Rn
 	0x66  RET
 	0x67  FAR RET
 	0x68  RETZ
@@ -180,8 +173,27 @@ registers:
 	0x6F  CLI
 	0x70  STI
 	0x71	LD Rn0, $Rn1	R[n0] = [R[n1]]
-	0x71	LD $Rn0, Rn1	[R[n1]] = R[n0]
+	0x72	LD $Rn0, Rn1	[R[n1]] = R[n0]
+	
+	0x73  CMP $i16		A - [IMM]
+	0x74  CMP $Sn		A - [S[n]]
+	0x75  CMP $Rn		A - [R[n]]
+	0x76  CMP i16		A - IMM
+	0x77  CMP Sn		A - S[n]
+	0x78  CMP Rn		A - R[n]
 
+	0x80	INC Rn
+	0x81	DEC Rn
+	0x82	INC Sn
+	0x83	DEC Sn
+
+	0x84	INC $Rn
+	0x85	DEC $Rn
+	0x86	INC $Sn
+	0x87	DEC $Sn
+
+	0x88	INC A
+	0x89	DEC A
 0xF0-F1	LOOPS
 	0xF0  REP
 	0xF1  END
