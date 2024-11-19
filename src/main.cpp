@@ -3,6 +3,9 @@
 #include <fstream>
 #include <vector>
 #include "cpu.h"
+#include<fcntl.h>
+#include<termios.h>
+#include<unistd.h>
 
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
@@ -59,6 +62,34 @@ void draw_buffer() {
 	SDL_RenderPresent(renderer);
 }
 
+// Enable raw mode (non-canonical, no echo)
+void enable_raw_mode() {
+	struct termios termios_p;
+	tcgetattr(STDIN_FILENO, &termios_p);
+	termios_p.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
+	tcsetattr(STDIN_FILENO, TCSANOW, &termios_p);
+}
+
+// Function to reset terminal back to normal mode
+void disable_raw_mode() {
+	struct termios termios_p;
+	tcgetattr(STDIN_FILENO, &termios_p); // Get current terminal settings
+	termios_p.c_lflag |= (ICANON | ECHO); // Enable canonical mode and echo
+	tcsetattr(STDIN_FILENO, TCSANOW, &termios_p); // Apply settings
+}
+
+// Make stdin non-blocking
+void set_nonblocking_mode() {
+	int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+	fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK); // Set non-blocking flag
+}
+
+// Reset stdin to blocking mode
+void set_blocking_mode() {
+	int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+	fcntl(STDIN_FILENO, F_SETFL, flags & ~O_NONBLOCK); // Clear non-blocking flag
+}
+
 int main(int argc, char* argv[]) {
 	VOP cpu(0, 512);
 	if (argc == 2)
@@ -104,7 +135,19 @@ int main(int argc, char* argv[]) {
 
 	bool quit = false;
 	SDL_Event event;
+
+	enable_raw_mode();
+	set_nonblocking_mode();
+
+	char c;
 	while (quit == false && cpu.IO[POWER_OFF_IO] == 0x00) {
+		int n = 0;
+		n = read(STDIN_FILENO, &c, 1);
+		
+		if (n == 1) {
+			cpu.IO[TERMINAL_I] = c;
+		}
+
 		while (SDL_PollEvent(&event) != 0) {
 			if (event.type == SDL_QUIT) {
 				quit = true;
@@ -112,17 +155,8 @@ int main(int argc, char* argv[]) {
 		}
 		
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		SDL_RenderClear(renderer);
-		
-		if (cpu.PC > 512+0xF) {
-			printf("OPCODE: %.2x\n", ram[cpu.PC]);
-			cpu.executeNext();
-			cpu.display();
-			cpu.IO[POWER_OFF_IO] = 0x01;
-		}
-
-		else
-			cpu.executeNext();
+		SDL_RenderClear(renderer);	
+		cpu.executeNext();
 		draw_buffer();
 		
 		if (cpu.IO[SWAP_BUFFERS] == 0x01) {
@@ -134,6 +168,9 @@ int main(int argc, char* argv[]) {
 			cpu.IO[TERMINAL] = 0;
 		}
 	}
+
+	disable_raw_mode();
+	set_blocking_mode();
 
 	cpu.display();
 	return 0;

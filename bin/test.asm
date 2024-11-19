@@ -1,15 +1,25 @@
 	org 512
-_start:
-	; 0 - 3
+init:
+	; Page 1, Offset 0 (0x10000)
 	push #1,s0
-	; 4 - 5
 	pop p1,s0
-	; 6 - 9
 	ld s0, #0
-	; A - C
+
+	; 'A'
 	ld a, #65
-	; D - E
+
+	; letters to print
+	ld w0, #26
+_loop:
 	poke a, s0
-inf:
-	; F - 11
-	jmp %inf
+	inc a
+	inc s0
+
+	; loop condition
+	dec w0
+	bnz %_loop
+_inf:
+	jmp %_inf
+
+	ds "Hello, World!"
+	db 0

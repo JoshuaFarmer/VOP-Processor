@@ -40,8 +40,8 @@ opcodes = {
 	"GETB#":32,
 	"SETB#":33,
 
-	"GETS":90,
-	"SETS":91,
+	"GETS":0x90,
+	"SETS":0x91,
 
 	"LDA,R":0x22,
 	"LDA,S":0x23,
@@ -149,6 +149,9 @@ opcodes = {
 	"INCA":0x88,
 	"DECA":0x89,
 
+	"POKER,.S":146,
+	"PEEKR,.S":147,
+	
 	"REP":0xF0,
 	"END":0xF1,
 }
@@ -180,7 +183,7 @@ def decode(_op, labels):
 				retstr += "R"
 				idx.append(x)
 				x = 8
-			elif str(op[i]) == f"T{x}":
+			elif str(op[i]) == f"X{x}":
 				retstr += "R"
 				idx.append(x + 8)
 				x = 8
@@ -204,7 +207,7 @@ def decode(_op, labels):
 				retstr += "F#"+str(str(op[i])[2:])
 				break
 			elif str(op[i])[0] == f".":
-				retstr += ".#"+str(str(op[i])[2:])
+				retstr += str(str(op[i]))
 				break
 			elif str(op[i])[0] == f"%":
 				# if not found, assume in first pass
@@ -243,17 +246,21 @@ def get_opcode(text, labels):
 	op, idx = decode(op, labels)
 	bytearr = []
 	
+	if '.' in op and '#' not in op:
+		_idx = decode("TEMP:\\" + op.split(".")[1], labels)
+		op = op.split(".")[0] + "." + _idx[0].split("TEMP:")[1]
+		idx.append(_idx[1][0])
 	if '#' in op:
 		opcode = ""
 		operands = []
 		if ',' in op and len(op.split("#")[1].split(",")) > 1:
 			opcode = op.split("#")[0] + '#,' + op.split("#")[1].split(",")[1]
 			operands = [op.split("#")[1].split(",")[0]]
-			print(opcode, operands)
+		#	print(opcode, operands)
 		else:
 			opcode = op.split("#")[0] + '#'
 			operands = [op.split("#")[1]]
-			print(opcode, operands)
+		#	print(opcode, operands)
 
 		bytearr.append(opcodes[opcode])
 		for x in idx:
@@ -268,14 +275,12 @@ def get_opcode(text, labels):
 			else:
 				bytearr.append(int(operand) & 255)
 				bytearr.append((int(operand) >> 8) & 255)
-			
 	elif '%' in op:
 		print("ERR:", op)
 	else:
 		bytearr.append(opcodes[op])
 		for x in idx:
 			bytearr.append(x)
-
 	sz = len(bytearr)
 	return sz, bytearr
 
@@ -287,14 +292,21 @@ def first_pass(text):
 			l = l.strip()
 			if l[0] == ';' or l[0] == '!':
 				continue
-			if l[-1] == ':':
+			elif l[-1] == ':':
 				labels[l[0:-1].upper()] = byteOff
 				continue
-			if l.split(" ")[0] == "org":
+			elif l.split(" ")[0] == "org":
 				byteOff = int(l.split(" ")[1])
 				continue
-			if l.split(" ")[0] == "define":
-				labels[l[0:-1].upper()] = byteOff
+			elif l.split(" ")[0] == "db":
+				byteOff += 1
+				continue
+			elif l.split(" ")[0] == "define":
+				labels[l.split(" ")[1].upper()] = int(l.split(" ")[2])
+				continue
+			elif l.split("\"")[0].strip() == "ds":
+				for c in l.split("\"")[1]:
+					byteOff += 1
 				continue
 			else:
 				byteOff += len(get_opcode(l, labels)[1])
@@ -308,12 +320,21 @@ def second_pass(text, labels):
 			l = l.strip()
 			if l[0] == ';' or l[0] == '!':
 				continue
-			if l[-1] == ':':
+			elif l[-1] == ':':
 				continue
-			if l.split(" ")[0] == "org":
+			elif l.split(" ")[0] == "org":
 				byteOff = int(l.split(" ")[1])
 				continue
-			if l.split(" ")[0] == "define":
+			elif l.split(" ")[0] == "define":
+				continue
+			elif l.split(" ")[0] == "db":
+				byteOff += 1
+				arr.append(int(l.split(" ")[1]))
+				continue
+			elif l.split("\"")[0].strip() == "ds":
+				for c in l.split("\"")[1]:
+					arr.append(ord(c))
+					byteOff += 1
 				continue
 			else:
 				data = get_opcode(l, labels)
