@@ -44,14 +44,13 @@ _loop:
 	bnz %_loop
 _inf:
 	jmp %_inf
-	nop
 incLine:
 	ld x6, #0
 	inc x7
 	ret
 msg:
-;	ds "Hello, World!"
-;	ds " the the the the the"
-	ds "this is a test of my simple put_string function wow look at this!"
-	ds "its like 256x160 with 8x8 font, (32x20 chars)"
+	ds "Hello, World! "
+	ds "the the the the the "
+	ds "this is a test of my simple put_string function wow look at this! "
+	ds "its like 256x160 with 8x8 font, (32x20 chars) "
 	db 0

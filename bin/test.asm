@@ -20,6 +20,3 @@ _loop:
 	bnz %_loop
 _inf:
 	jmp %_inf
-
-	ds "Hello, World!"
-	db 0
