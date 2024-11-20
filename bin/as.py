@@ -151,6 +151,21 @@ opcodes = {
 
 	"POKER,.S":146,
 	"PEEKR,.S":147,
+
+	"SHLR":148,
+	"SHRR":149,
+
+	"ADDR,#":150,
+	"SUBR,#":151,
+	"CMPR,#":152,
+	"ADDR,R":153,
+	"SUBR,R":154,
+	"CMPR,R":155,
+	"ANDR,R":156,
+	"ORR,R":157,
+	"NANDR,R":158,
+	"XORR,R":159,
+	"LDR,R":160,
 	
 	"REP":0xF0,
 	"END":0xF1,

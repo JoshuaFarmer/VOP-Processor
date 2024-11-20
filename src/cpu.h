@@ -185,6 +185,18 @@ class VOP {
 		SHL_R,
 		SHR_R,
 
+		ADD_Rn_i16,
+		SUB_Rn_i16,
+		CMP_Rn_i16,
+		ADD_Rn1_Rn2,
+		SUB_Rn1_Rn2,
+		CMP_Rn1_Rn2,
+		AND_Rn1_Rn2,
+		OR_Rn1_Rn2,
+		NAND_Rn1_Rn2,
+		XOR_Rn1_Rn2,
+		LD_Rn_Rn,
+
 		// 0xF0-F1 LOOPS
 		REP = 0xF0,
 		END = 0xF1
@@ -194,7 +206,7 @@ class VOP {
 	uint16_t Res=0x0000;
 	uint16_t Acc=0x0000;
 	uint16_t Rn[16]={0x0000};
-	uint16_t Sn[4]={0x0000};
+	uint16_t Sn[4]={0x5000, 0x6000, 0x7000, 0x8000};
 	uint16_t PC=0x0000;
 	uint8_t  P0=0x0000, P1=0x0000;
 
@@ -311,13 +323,13 @@ class VOP {
 		int old = Addr;
 		int X = 0, bounds = 65536 - Addr;
 		while (X != 1 && --bounds) {
-			int _ = fetch(++Addr, P0);
+			int _ = fetch(Addr++, P0);
 			if (_ == REP) X--;
 			if (_ == END) X++;
 		}
 
 		if (bounds == 0) {
-			printf("Error: No matching END found for REP at address 0x%X\n", old);
+			printf("Error: No matching END found for REP at addRess 0x%X\n", old);
 			return old;
 		}
 
@@ -437,56 +449,56 @@ class VOP {
 				Rn[n0] = Tmp;
 				} break;
 			case STORE_A_a16: {
-				int address  = fetch(PC++, P0);
-				    address |= fetch(PC++, P0) << 8;
-				poke(Acc, address, P1);
+				int addRess  = fetch(PC++, P0);
+				    addRess |= fetch(PC++, P0) << 8;
+				poke(Acc, addRess, P1);
 				} break;
 			case STORE_Rn_a16: {
 				int idx = fetch(PC++, P0);
 				int n0  = idx & 0xF;
-				int address  = fetch(PC++, P0);
-				    address |= fetch(PC++, P0) << 8;
-				poke(Rn[n0], address, P1);
+				int addRess  = fetch(PC++, P0);
+				    addRess |= fetch(PC++, P0) << 8;
+				poke(Rn[n0], addRess, P1);
 				} break;
 			case LOAD_A_a16: {
-				int address  = fetch(PC++, P0);
-				    address |= fetch(PC++, P0) << 8;
-				Acc = peek(address, P1);
+				int addRess  = fetch(PC++, P0);
+				    addRess |= fetch(PC++, P0) << 8;
+				Acc = peek(addRess, P1);
 				} break;
 			case LOAD_Rn_a16: {
 				int idx = fetch(PC++, P0);
 				int n0  = idx & 0xF;
-				int address  = fetch(PC++, P0);
-				    address |= fetch(PC++, P0) << 8;
-				Rn[n0] = peek(address, P1);
+				int addRess  = fetch(PC++, P0);
+				    addRess |= fetch(PC++, P0) << 8;
+				Rn[n0] = peek(addRess, P1);
 				} break;
 			case FAR_STORE_A_a24: {
-				int address  = fetch(PC++, P0);
-				    address |= fetch(PC++, P0) << 8;
+				int addRess  = fetch(PC++, P0);
+				    addRess |= fetch(PC++, P0) << 8;
 				int seg      = fetch(PC++, P0);
-				poke(Acc, address, seg);
+				poke(Acc, addRess, seg);
 				} break;
 			case FAR_STORE_Rn_a24: {
 				int idx = fetch(PC++, P0);
 				int n0  = idx & 0xF;
-				int address  = fetch(PC++, P0);
-				    address |= fetch(PC++, P0) << 8;
+				int addRess  = fetch(PC++, P0);
+				    addRess |= fetch(PC++, P0) << 8;
 				int seg      = fetch(PC++, P0);
-				poke(Rn[n0], address, seg);
+				poke(Rn[n0], addRess, seg);
 				} break;
 			case FAR_LOAD_A_a24: {
-				int address  = fetch(PC++, P0);
-				    address |= fetch(PC++, P0) << 8;
+				int addRess  = fetch(PC++, P0);
+				    addRess |= fetch(PC++, P0) << 8;
 				int seg      = fetch(PC++, P0);
-				Acc = peek(address, seg);
+				Acc = peek(addRess, seg);
 				} break;
 			case FAR_LOAD_Rn_a24: {
 				int idx = fetch(PC++, P0);
 				int n0  = idx & 0xF;
-				int address  = fetch(PC++, P0);
-				    address |= fetch(PC++, P0) << 8;
+				int addRess  = fetch(PC++, P0);
+				    addRess |= fetch(PC++, P0) << 8;
 				int seg      = fetch(PC++, P0);
-				Rn[n0] = peek(address, seg);
+				Rn[n0] = peek(addRess, seg);
 				} break;
 
 			case GET_a16: {
@@ -561,7 +573,7 @@ class VOP {
 				int n0  = fetch(PC++, P0) & 0b11;
 				int n1  = fetch(PC++, P0) & 0b11;
 
-				Sn[n1] = Sn[n0];
+				Sn[n0] = Sn[n1];
 				} break;
 			case LDI_A_i16: {
 				int i16  = fetch(PC++, P0);
@@ -900,8 +912,8 @@ U_JUMP_LA:
 			case FAR_JUMP_a24: {
 				int x  = fetch(PC++, P0);
 				    x |= fetch(PC++, P0) << 8;
-				PC = x;
 				P0 = fetch(PC++, P0);
+				PC = x;
 				}
 				break;
 R_JUMP_LA:
@@ -948,19 +960,19 @@ R_JUMP_LA:
 				PC += 2;
 				} break;
 			case JNZ_a16: {
-				if (!zero) {
+				if (!zero == true) {
 					goto U_JUMP_LA;
 				}
 				PC += 2;
 				} break;
 			case JNC_a16: {
-				if (!carry) {
+				if (!carry == true) {
 					goto U_JUMP_LA;
 				}
 				PC += 2;
 				} break;
 			case JNP_a16: {
-				if (!parity) {
+				if (!parity == true) {
 					goto U_JUMP_LA;
 				}
 				PC += 2;
@@ -969,28 +981,30 @@ R_JUMP_LA:
 U_CALL_LA:
 				int x  = fetch(PC++, P0);
 				    x |= fetch(PC++, P0) << 8;
-				push(PC);
+				write(Sn[3]--, 0xFF, PC);
+				write(Sn[3]--, 0xFF, PC >> 8);
 				PC = x;
 				}
 				break;
 			case FAR_CALL_a24: {
 				int x  = fetch(PC++, P0);
 				    x |= fetch(PC++, P0) << 8;
-				push(PC);
-				push(P0);
+				write(Sn[3]--, 0xFF, PC);
+				write(Sn[3]--, 0xFF, PC >> 8);
+				write(Sn[3]--, 0xFF, P0);
 				P0 = fetch(PC++, P0);
 				PC = x;
 				}
 				break;
 
 			case CALZ_a16: {
-				if (zero) {
+				if (zero == true) {
 					goto U_CALL_LA;
 				}
 				PC += 2;
 				} break;
 			case CALC_a16: {
-				if (carry) {
+				if (carry == true) {
 					goto U_CALL_LA;
 				}
 				PC += 2;
@@ -1005,19 +1019,21 @@ U_CALL_LA:
 
 			case RET: {
 U_RET:
-				PC = pop();
+				PC  = fetch(++Sn[3], 0xFF) << 8;
+				PC |= fetch(++Sn[3], 0xFF);
 				} break;
 			case FAR_RET: {
-				P0 = pop();
-				PC = pop();
+				P0  = fetch(++Sn[3], 0xFF);
+				PC  = fetch(++Sn[3], 0xFF) << 8;
+				PC |= fetch(++Sn[3], 0xFF);
 				} break;
 
 			case RETZ: {
-				if (zero)
+				if (zero == true)
 					goto U_RET;
 				} break;
 			case RETC: {
-				if (carry)
+				if (carry == true)
 					goto U_RET;
 				} break;
 			
@@ -1118,13 +1134,13 @@ U_RET:
 
 			case NEAR_POKE_Rn: {
 				int idx0 = (fetch(PC++, P0)) & 0xF;
-				int idx1 = (fetch(PC++, P0)) & 0xF;
+				int idx1 = (fetch(PC++, P0)) & 0b11;
 				poke(Rn[idx0], Sn[idx1], P0);
 			} break;
 
 			case NEAR_PEEK_Rn: {
 				int idx0 = (fetch(PC++, P0)) & 0xF;
-				int idx1 = (fetch(PC++, P0)) & 0xF;
+				int idx1 = (fetch(PC++, P0)) & 0b11;
 				Rn[idx0] = peek(Sn[idx1], P0);
 			} break;
 
@@ -1144,21 +1160,123 @@ U_RET:
 				}
 				break;
 
+			case ADD_Rn_i16:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int i16 = (fetch(PC++, P0));
+				    i16|= (fetch(PC++, P0)) << 8;
+				Tmp = Rn[idx0];
+				Res = Rn[idx0] + i16;
+				flags();
+				Rn[idx0] = Res;
+			} break;
+
+			case SUB_Rn_i16:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int i16 = (fetch(PC++, P0));
+				    i16|= (fetch(PC++, P0)) << 8;
+				Tmp = Rn[idx0];
+				Res = Rn[idx0] - i16;
+				flags();
+				Rn[idx0] = Res;
+			} break;
+
+			case CMP_Rn_i16:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int i16 = (fetch(PC++, P0));
+				    i16|= (fetch(PC++, P0)) << 8;
+				Tmp = Rn[idx0];
+				Res = Rn[idx0] - i16;
+				flags();
+			} break;
+
+			case ADD_Rn1_Rn2:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int idx1 = (fetch(PC++, P0)) & 0xF;
+				Tmp = Rn[idx0];
+				Res = Rn[idx0] + Rn[idx1];
+				flags();
+				Rn[idx0] = Res;
+			} break;
+
+			case SUB_Rn1_Rn2:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int idx1 = (fetch(PC++, P0)) & 0xF;
+				Tmp = Rn[idx0];
+				Res = Rn[idx0] - Rn[idx1];
+				flags();
+				Rn[idx0] = Res;
+			} break;
+
+			case CMP_Rn1_Rn2:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int idx1 = (fetch(PC++, P0)) & 0xF;
+				Tmp = Rn[idx0];
+				Res = Rn[idx0] - Rn[idx1];
+				flags();
+			} break;
+
+			case AND_Rn1_Rn2:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int idx1 = (fetch(PC++, P0)) & 0xF;
+				Rn[idx0] &= Rn[idx1];
+			} break;
+
+			case OR_Rn1_Rn2:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int idx1 = (fetch(PC++, P0)) & 0xF;
+				Rn[idx0] |= Rn[idx1];
+			} break;
+
+			case NAND_Rn1_Rn2:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int idx1 = (fetch(PC++, P0)) & 0xF;
+				Rn[idx0] &= ~Rn[idx1];
+			} break;
+
+			case XOR_Rn1_Rn2:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int idx1 = (fetch(PC++, P0)) & 0xF;
+				Rn[idx0] ^= Rn[idx1];
+			} break;
+
+			case LD_Rn_Rn:
+			{
+				int idx0 = (fetch(PC++, P0)) & 0xF;
+				int idx1 = (fetch(PC++, P0)) & 0xF;
+				Rn[idx0] = Rn[idx1];
+			} break;
+
 			// LOOPS
 			case REP: {
 				++__LOC;
 				__LADR[__LOC][0] = PC;
 				__LADR[__LOC][1] = find_end_of_rep(++PC);
 				if (PC == __LADR[__LOC][1]) break;
-				while (zero == false) {
-					if (PC == __LADR[__LOC][1]) // if at end
+				while (true) {
+					if (PC == __LADR[__LOC][1]) {
 						PC = __LADR[__LOC][0];
+						if (zero) break;
+					}
 					else {
 						executeNext();
 					}
 				}
 				--__LOC;
 			} break;
+
+			case END: {
+				break;
+			}
 
 			default:
 				printf("Invalid Opcode\n");
@@ -1184,14 +1302,14 @@ U_RET:
 
 	void display() {
 		printf("PC: %.4x\n", PC);
-		printf("A : %.4x   S0: %.4x   S1: %.4x   S2: %.4x\n", Acc, Sn[0], Sn[1], Sn[2]);
+		printf("A : %.4x   S0: %.4x   S1: %.4x   S2: %.4x   S3: %.4x\n", Acc, Sn[0], Sn[1], Sn[2], Sn[3]);
 		printf("Te: %.4x   Re: %.4x   P0: %.4x   P1: %.4x\n", Tmp, Res, P0, P1);
 		for (int i = 0; i < 8; i += 4) {
 			printf("W%x: %.4x   W%x: %.4x   W%x: %.4x   W%x: %.4x\n", i, Rn[i], i+1, Rn[i+1], i+2, Rn[i+2], i+3, Rn[i+3]);
 		}
 
 		for (int i = 8; i < 16; i += 4) {
-			printf("T%x: %.4x   T%x: %.4x   T%x: %.4x   T%x: %.4x\n", i, Rn[i], i+1, Rn[i+1], i+2, Rn[i+2], i+3, Rn[i+3]);
+			printf("X%x: %.4x   X%x: %.4x   X%x: %.4x   X%x: %.4x\n", i-8, Rn[i], i-7, Rn[i+1], i-6, Rn[i+2], i-5, Rn[i+3]);
 		}
 
 		printf("STACK: (S2 - 8) TO (S2 + 8)\n");
@@ -1199,7 +1317,7 @@ U_RET:
 			int a = i;
 			if (a >= MAX_RAM || a < 0) {
 				// Wrap around logic (or clamping) should be fixed
-				a = (a + MAX_RAM) % MAX_RAM;  // Ensures the address is wrapped correctly
+				a = (a + MAX_RAM) % MAX_RAM;  // EnsuRes the addRess is wrapped correctly
 			}
 			printf("%.6x: %.2x   %.6x: %.2x   %.6x: %.2x   %.6x: %.2x\n", a, ram[a], a+1, ram[a+1], a+2, ram[a+2], a+3, ram[a+3]);
 		}
