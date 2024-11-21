@@ -23,4 +23,5 @@ msg:
 	ds "which loads the value at s0 + w0 (at code page)"
 	db 10
 	ds "as you can see, i think its faster, idk"
+	db 10
 	db 0
