@@ -202,6 +202,11 @@ class VOP {
 		POKE_A_Sn_SRn,
 		POKE_A_Sn_ARn,
 
+		PEEK_A_Sn_SRn_N,
+		PEEK_A_Sn_ARn_N,
+		POKE_A_Sn_SRn_N,
+		POKE_A_Sn_ARn_N,
+
 		// 0xF0-F1 LOOPS
 		REP = 0xF0,
 		END = 0xF1
@@ -1308,6 +1313,31 @@ U_RET:
 			{
 				int Ridx = fetch(PC++, P0) & 0xF;
 				poke(Acc, Sn[0] + Rn[Ridx], P1);
+			} break;
+
+			// near ones
+			case PEEK_A_Sn_SRn_N:
+			{
+				int Ridx = fetch(PC++, P0) & 0xF;
+				Acc = peek(Sn[0] - Rn[Ridx], P0);
+			} break;
+
+			case PEEK_A_Sn_ARn_N:
+			{
+				int Ridx = fetch(PC++, P0) & 0xF;
+				Acc = peek(Sn[0] + Rn[Ridx], P0);
+			} break;
+
+			case POKE_A_Sn_SRn_N:
+			{
+				int Ridx = fetch(PC++, P0) & 0xF;
+				poke(Acc, Sn[0] - Rn[Ridx], P0);
+			} break;
+
+			case POKE_A_Sn_ARn_N:
+			{
+				int Ridx = fetch(PC++, P0) & 0xF;
+				poke(Acc, Sn[0] + Rn[Ridx], P0);
 			} break;
 
 			// LOOPS

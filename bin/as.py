@@ -171,6 +171,10 @@ opcodes = {
 	"PEEKA,+R":162,
 	"POKEA,-R":163,
 	"POKEA,+R":164,
+	"PEEKA,.-R":165,
+	"PEEKA,.+R":166,
+	"POKEA,.-R":167,
+	"POKEA,.+R":168,
 
 	"REP":0xF0,
 	"END":0xF1,
