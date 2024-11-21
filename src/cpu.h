@@ -313,6 +313,20 @@ class VOP {
 		return value;
 	}
 
+	void interrupt(uint8_t x)
+	{
+		// 4 bytes per entry
+		uint16_t addr = peek(x * 4, 0x00);
+		uint8_t  page = fetch(x+2, 0x00);
+
+		write(Sn[3]--, 0xFF, PC);
+		write(Sn[3]--, 0xFF, PC >> 8);
+		write(Sn[3]--, 0xFF, P0);
+		
+		P0 = page;
+		PC = addr;
+	}
+
 	void flags() {
 		zero   = (Res == 0);
 		carry  = (Tmp > Res);
@@ -1255,6 +1269,16 @@ U_RET:
 				int idx0 = (fetch(PC++, P0)) & 0xF;
 				int idx1 = (fetch(PC++, P0)) & 0xF;
 				Rn[idx0] = Rn[idx1];
+			} break;
+
+			case INT_i8:
+			{
+				interrupt(fetch(PC++, P0));
+			} break;
+
+			case INT_Rn:
+			{
+				interrupt(Rn[fetch(PC++, P0) & 0xF]);
 			} break;
 
 			// LOOPS

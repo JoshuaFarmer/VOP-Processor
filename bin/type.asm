@@ -1,4 +1,4 @@
-	org 512
+	org 1024
 init:
 	ld s0, #3
 	ld x7, #2

@@ -6,7 +6,7 @@
 	; Pn		pages (P0, P1) (8 b)
 	; Te&Re	Temp&Res (internal) (16 b)
 
-	org 512
+	org 1024
 	; call stack is hard coded as S3 (0x8000 on boot)
 init:
 	; Page 1, Offset 0 (0x10000) (terminal buffer)

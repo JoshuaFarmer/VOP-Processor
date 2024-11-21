@@ -115,10 +115,10 @@ void set_blocking_mode() {
 }
 
 int main(int argc, char* argv[]) {
-	VOP cpu(0, 512);
+	VOP cpu(0, 1024);
 	if (argc == 2)
 	{
-		cpu.load_from_file(argv[1], 512);
+		cpu.load_from_file(argv[1], 1024);
 	}
 	else {exit(-1);}
 
