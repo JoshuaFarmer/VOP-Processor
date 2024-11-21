@@ -31,8 +31,10 @@ _loop:
 	peek w0, .s1
 	and w0, w3
 
-	; swap w0 & a, and extract lower eight bits.
+	; set a to w0
 	ld a, w0
+
+	; blue bg and yellow fg (0x1E00)
 	or #7680
 
 	; store and get ready for next.
