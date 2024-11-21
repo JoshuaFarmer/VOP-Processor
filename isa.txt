@@ -1,199 +1,195 @@
-CPU Design rev 0.7
-merged insructions and refactoring
+REGISTERS:
+	A	16 bit accumulator
+	P	16 bit program counter
+	Rn	16 bit register bank (of 16 registers)
+	Sn	16 bit stack pointer bank (of 4 registers)
+	P0	8 bit code page
+	P1	8 bit data page
+	BS	1 bit busy flag, unused
+	ZE	1 bit zero flag
+	CY	1 bit carry flag
+	PA	1 bit parity flag
+	IM	1 bit interrupt mask flag
+	DF	1 bit data format flag	(changes wheather pop/push/etc
+										|using 16 (when false) bits or 8
+										(when high))
 
-8 bit bus
+instructions:
+// 0x00-0x0F STACK OPERATIONS
+PUSH_A_Sn = 0x00,
+POP_A_Sn = 0x01,
+POKE_A_Sn = 0x02,
+PEEK_A_Sn = 0x03,
 
-flags: Zero, Carry, Parity, Interrupt, Format
+PUSH_Rn_Sn = 0x04,
+POP_Rn_Sn = 0x05,
+POKE_Rn = 0x06,
+PEEK_Rn = 0x07,
 
-info:
-      All short memory instructions use Page1 (Data)
-      Format flag when 0 would store/load words, when 1 would store/load bytes
+PUSH_i8 = 0x08,
+PUSH_i16 = 0x09,
 
-registers:
-      Accumulator 16 bit register for arithmetic operations A
-      ProgramCounter    16 bit instruction pointer		    P
-      StackPointer      16 bit stack pointer (USES Page 1)        S0
-      VariablePointer   16 bit stack pointer (USES Page 1)        S1
-      StackBasePtr      16 bit stack base (USES Page 1)		S2
-      Page 0		8 bit code segment		 P0
-      Page 1		8 bit data/stack segment		      P1
-      RBank       16*16 bit register bank		       Rn
+PUSH_P0 = 0x0A,
+PUSH_P1 = 0x0B,
+POP_P1 = 0x0C,
 
-		      only used in loops, it contains the old ProgramCounter
-		      and new ProgramCounter
-		      like in a rep it does:
-		      case REP:
-		      ++__LOC
-		      __LADR[__LOC][0] = ProgramCounter
-		      __LADR[__LOC][1] = find_end_of_rep(ProgramCounter)
-		      while ZeroFlag == false
-		 if __LADR[__LOC][0] == __LADR[__LOC][1]
-		       jump __LADR[__LOC][0]
-		 else
-		       executeNext()
-		      jump __LADR[__LOC][1]
-		      --__LOC
-		      }
-      LoopAddr    256*2*16 bit instruction pointer          __LADR
-      LoopCnt		8 bit current loop (for nesting)          __LOC
+PUSH_F = 0x0D,
+POP_F = 0x0E,
 
-	--- ISA ---
-0x00-0F	STACK
-	0x00  PUSH A,  Sn    [--S[n]] = A
-	0x01  POP  A,  Sn   	A = [S[n]++]
-	0x02  POKE A,  Sn    [S[n]] = A
-	0x03  PEEK A,  Sn		A = [S[n]]
-	
-	0x04  PUSH Rn, Sn
-	0x05  POP  Rn, Sn
-	0x06  POKE Rn, Sn
-	0x07  PEEK Rn, Sn
+// 0x10-0x15 EXCHANGE OPERATIONS
+XC_A_A = 0x10,
+XC_Rn0_Rn1 = 0x11,
+XC_Rn_Sn = 0x12,
+XC_Sn1_Sn2 = 0x13,
+XC_A_Sn = 0x14,
+XC_A_Rn = 0x15,
 
-	0x08  PUSH i8
-	0x09  PUSH i16
+// 0x16-0x2A BASIC DATA MANIPULATION
+STORE_A_a16 = 0x16,
+STORE_Rn_a16 = 0x17,
+LOAD_A_a16 = 0x18,
+LOAD_Rn_a16 = 0x19,
 
-	0x0A  PUSH P0
-	0x0B  PUSH P1
-	0x0C  POP  P1
+FAR_STORE_A_a24 = 0x1A,
+FAR_STORE_Rn_a24 = 0x1B,
+FAR_LOAD_A_a24 = 0x1C,
+FAR_LOAD_Rn_a24 = 0x1D,
 
-	0x0D  PUSH F
-	0x0E  POP  F
-	
-0x10-15	EXCHANGES
-	0x10  XC A,   A
-	0x11  XC Rn0, Rn1
-	0x12  XC Rn,  Sn
-	0x13  XC Sn1, Sn2
-	0x14  XC A,   Sn
-	0x15  XC A,   Rn
+SET_a16 = 0x1E,
+GET_a16 = 0x1F,
 
-0x16-2A	BASIC DATA MANIPULATION
-	0x16  STORE A,  a16
-	0x17  STORE Rn, a16
-	0x18  LOAD  A,  a16
-	0x19  LOAD  Rn, a16
+BLCKGET_a16 = 0x20,
+BLCKSET_a16 = 0x21,
 
-	0x1A  FAR STORE A,  a24
-	0x1B  FAR STORE Rn, a24
-	0x1C  FAR LOAD  A,  a24
-	0x1D  FAR LOAD  Rn, a24
+LD_A_Rn = 0x22,
+LD_A_Sn = 0x23,
+LD_Rn_A = 0x24,
+LD_Sn_A = 0x25,
+LD_Rn_Sn = 0x26,
+LD_Sn_Rn = 0x27,
 
-	0x1E  SET a16
-	0x1F  GET a16
+LD_Rn_i16 = 0x28,
+LD_Sn_i16 = 0x29,
+LD_A_i16 = 0x2A,
 
-	0x20  BLCKGET a16, n8
-	0x21  BLCKSET a16, n8
+// 0x2B-0x38 ARITHMETIC OPERATIONS
+ADD_i16 = 0x2B,
+ADD_Sn = 0x2E,
+ADD_Rn = 0x2F,
+ADD_i16_imm = 0x30,
+ADD_Sn_A = 0x31,
+ADD_Rn_A = 0x32,
 
-	0x22  LD A,  Rn	A = R[n]
-	0x23  LD A,  Sn	A = S[n]
-	0x24  LD Rn, A		rest can be infered
-	0x25  LD Sn, A
-	0x26  LD Rn, Sn
-	0x27  LD Sn, Rn
+SUB_i16 = 0x33,
+SUB_Sn = 0x34,
+SUB_Rn = 0x35,
+SUB_i16_imm = 0x36,
+SUB_Sn_A = 0x37,
+SUB_Rn_A = 0x38,
 
-	0x28  LDI Rn, i16
-	0x29  LDI Sn, i16
-	0x2A  LDI A, i16
+CMP_i16 = 0x73,
+CMP_Sn = 0x74,
+CMP_Rn = 0x75,
+CMP_i16_imm = 0x76,
+CMP_Sn_A = 0x77,
+CMP_Rn_A = 0x78,
 
-0x2B-38	ARITHMETIC OPERATIONS
-	0x2B  ADD $i16		A += [IMM]
-	0x2E  ADD $Sn		A += [S[n]]
-	0x2F  ADD $Rn		A += [R[n]]
-	0x30  ADD i16		A += IMM
-	0x31  ADD Sn		A += S[n]
-	0x32  ADD Rn		A += R[n]
+// 0x39-0x53 LOGICAL OPERATIONS
+NOT_A = 0x39,
+NEG_A,
 
-	0x33  SUB $i16		A -= [IMM]
-	0x34  SUB $Sn		A -= [S[n]]
-	0x35  SUB $Rn		A -= [R[n]]
-	0x36  SUB i16		A -= IMM
-	0x37  SUB Sn		A -= S[n]
-	0x38  SUB Rn		A -= R[n]
+NOT_Rn,
+NEG_Rn,
 
-0x39-53	LOGICAL OPERATIONS
-	0x39	NOT A				A = ~A;
-	0x3A	NEG A				A = -A;
+NOT_Rn_mem,
+NEG_Rn_mem,
 
-	0x3B	NOT Rn			A = ~Rn;
-	0x3C	NEG Rn			A = -Rn;
+NOT_Sn,
+NEG_Sn,
 
-	0x3D	NOT $Rn			[R[n]] = ~[R[n]]
-	0x3E	NEG $Rn			[R[n]] = -[R[n]]
+AND_i16,
+AND_Rn,
+AND_Sn,
+AND_i16_imm,
+AND_Rn_reg,
 
-	0x40	NOT $Sn			[S[n]] = ~[S[n]]
-	0x41	NEG $Sn			[S[n]] = -[S[n]]
+OR_i16,
+OR_Rn,
+OR_Sn,
+OR_i16_imm,
+OR_Rn_reg,
 
-	0x43	AND $i16			A &= [i16]
-	0x46	AND $Rn			A &= [R[n]]
-	0x47	AND $Sn			A &= [S[n]]
-	0x48	AND i16			A &= i16
-	0x49	AND Rn			A &= R[n]
+XOR_i16,
+XOR_Rn,
+XOR_Sn,
+XOR_i16_imm,
+XOR_Rn_reg,
 
-	0x4A	OR $i16			A |= [i16]
-	0x4B	OR $Rn			A |= [R[n]]
-	0x4C	OR $Sn			A |= [S[n]]
-	0x4D	OR i16			A |= i16
-	0x4E	OR Rn				A |= R[n]
+// 0x54-0x69 JUMP AND CALLING/RET
+JUMP_a16 = 0x54,
+JUMP_Rn = 0x55,
+FAR_JUMP_a24 = 0x56,
+REL_JUMP_i8 = 0x57,
+REL_JMZ_i8 = 0x58,
+REL_JMC_i8 = 0x59,
+JMZ_a16 = 0x5A,
+JMC_a16 = 0x5B,
+JP_a16 = 0x5C,
+JNZ_a16 = 0x5D,
+JNC_a16 = 0x5E,
+JNP_a16 = 0x5F,
 
-	0x4F	XOR $i16			A ^= [i16]
-	0x50	XOR $Rn			A ^= [R[n]]
-	0x51	XOR $Sn			A ^= [S[n]]
-	0x52	XOR i16			A ^= i16
-	0x53	XOR Rn			A ^= R[n]
+CALL_a16 = 0x60,
+FAR_CALL_a24 = 0x61,
+CALZ_a16 = 0x62,
+CALC_a16 = 0x63,
+CALL_Rn = 0x64,
 
-0x54-69	JUMPING AND CALLING/RET
-	0x54  JUMP a16
-	0x55  JUMP Rn
-	0x56  FAR JUMP a24
-	0x57  RELATIVE JUMP i8
-	0x58  RELATIVE JMZ i8
-	0x59  RELATIVE JMC i8
-	0x5A  JMZ  a16
-	0x5B  JMC  a16
-	0x5C  JP   a16
-	0x5D  JNZ  a16
-	0x5E  JNC  a16
-	0x5F  JNP  a16
-	0x60  CALL a16
-	0x61  FAR CALL a24
-	0x62  CALZ a16
-	0x63  CALC a16
-	0x64  CALL Rn
-	0x66  RET
-	0x67  FAR RET
-	0x68  RETZ
-	0x69  RETC
+RET = 0x66,
+FAR_RET = 0x67,
+RETZ = 0x68,
+RETC = 0x69,
 
-0x6A-F0 OTHER
-	0x6A  SETFORMAT i8
-	0x6B  OUT
-	0x6C  IN
-	0x6D  INT i8
-	0x6E  INT Rn
-	0x6F  CLI
-	0x70  STI
-	0x71	LD Rn0, $Rn1	R[n0] = [R[n1]]
-	0x72	LD $Rn0, Rn1	[R[n1]] = R[n0]
-	
-	0x73  CMP $i16		A - [IMM]
-	0x74  CMP $Sn		A - [S[n]]
-	0x75  CMP $Rn		A - [R[n]]
-	0x76  CMP i16		A - IMM
-	0x77  CMP Sn		A - S[n]
-	0x78  CMP Rn		A - R[n]
+// 0x6A-0xF0 OTHER INSTRUCTIONS
+SETFORMAT_i8 = 0x6A,
+OUT = 0x6B,
+IN = 0x6C,
+INT_i8 = 0x6D,
+INT_Rn = 0x6E,
+CLI = 0x6F,
+STI = 0x70,
 
-	0x80	INC Rn
-	0x81	DEC Rn
-	0x82	INC Sn
-	0x83	DEC Sn
+LDR_Rn0_Rn1 = 0x71,
+STR_Rn0_Rn1 = 0x72,
 
-	0x84	INC $Rn
-	0x85	DEC $Rn
-	0x86	INC $Sn
-	0x87	DEC $Sn
+INC_Rn = 0x80,
+DEC_Rn = 0x81,
+INC_Sn = 0x82,
+DEC_Sn = 0x83,
+INC_Rn_AT = 0x84,
+DEC_Rn_AT = 0x85,
+INC_Sn_AT = 0x86,
+DEC_Sn_AT = 0x87,
 
-	0x88	INC A
-	0x89	DEC A
-0xF0-F1	LOOPS
-	0xF0  REP
-	0xF1  END
+INC_A = 0x88,
+DEC_A = 0x89,
+
+BLCKGET_Sn = 0x90,
+BLCKSET_Sn = 0x91,
+NEAR_POKE_Rn,
+NEAR_PEEK_Rn,
+
+SHL_R,
+SHR_R,
+
+ADD_Rn_i16,
+SUB_Rn_i16,
+CMP_Rn_i16,
+ADD_Rn1_Rn2,
+SUB_Rn1_Rn2,
+CMP_Rn1_Rn2,
+AND_Rn1_Rn2,
+OR_Rn1_Rn2,
+NAND_Rn1_Rn2,
+XOR_Rn1_Rn2,
+LD_Rn_Rn,
