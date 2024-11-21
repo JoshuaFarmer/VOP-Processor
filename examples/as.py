@@ -1,3 +1,4 @@
+# simple (bad) assembler
 from sys import argv
 
 opcodes = {

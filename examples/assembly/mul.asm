@@ -4,7 +4,7 @@ main:
 	ld w0, #8
 	ld w1, #2
 	call %_mul
-	jmp %inf
+	jmp %_inf
 _mul:
 	xor w2, w2
 	ld w3, #1
@@ -28,4 +28,4 @@ _mul_endif:
 	ld a, w2
 	ret
 _inf:
-	jmp %inf
+	jmp %_inf
