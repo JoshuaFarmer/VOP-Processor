@@ -232,9 +232,11 @@ def decode(_op, labels):
 			elif str(op[i])[0] == f"-":
 				res = decode("TEMP:\\" + str(op[i])[1:], labels)
 				retstr += "-" + res[0].split(":")[1]
+				idx.append(res[1][0])
 				break
 			elif str(op[i])[0] == f"+":
 				res = decode("TEMP:\\" + str(op[i])[1:], labels)
+				idx.append(res[1][0])
 				retstr += "+" + res[0].split(":")[1]
 				break
 			elif str(op[i])[0] == f"%":
