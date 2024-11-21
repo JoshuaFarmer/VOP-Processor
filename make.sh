@@ -1,1 +1,1 @@
-g++ "src/main.cpp" -o "bin/main" -Wall -Wextra -Werror -Wpedantic -lSDL2
+g++ "src/main.cpp" -o "bin/main" -Wall -Wextra -Werror -Wpedantic -lSDL2 -O3 --fast-math

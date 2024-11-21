@@ -23,26 +23,32 @@ init:
 	; X,Y
 	ld x6, #0
 	ld x7, #0
+
+	; constant for and
+	ld w3, #255
 _loop:
 	; peek into near memory (code page)
 	peek w0, .s1
+	and w0, w3
 
 	; swap w0 & a, and extract lower eight bits.
-	xc a, w0
-	and #255
+	ld a, w0
+	or #7680
 
 	; store and get ready for next.
 	poke a, s0
+	inc s0
 	inc s0
 	inc s1
 
 	inc x6
 	cmp x6, #32
 	cz %incLine
-
-	cmp #0
+	ld a, w0
+	sub #0
 	bnz %_loop
 _inf:
+	ld a, #65
 	jmp %_inf
 incLine:
 	ld x6, #0

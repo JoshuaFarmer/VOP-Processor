@@ -282,7 +282,7 @@ def get_opcode(text, labels):
 			bytearr.append(x)
 		for operand in operands:
 			if '.' in op:
-				bytearr.append(int(operand) & 255)
+				bytearr.append(int(operand,0) & 255)
 			elif 'F' in op:
 				bytearr.append(int(operand) & 255)
 				bytearr.append((int(operand) >> 8) & 255)

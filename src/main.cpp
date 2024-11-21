@@ -36,16 +36,25 @@ uint8_t palette[256][3] = {
 
 #include "font.h"
 
-void draw_char(int x, int y, uint8_t c) {
-	// c is the character code in video_ram, which maps to an index in the console_font_8x8 array
+uint32_t raw_video_out[SCREEN_WIDTH*SCREEN_HEIGHT];
+
+void draw_char(int _x, int _y, uint8_t c, uint8_t col) {
 	uint8_t *char_bitmap = &console_font_8x8[c * 8];
 
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	for (int py = 0; py < 8; ++py) {
 		for (int px = 0; px < 8; ++px) {
+			int x = _x  + px;
+			int y = _y  + py;
+			uint32_t color;
+
+			// Set color for the pixel: 1 is foreground, 0 is background
 			if (char_bitmap[py] & (1 << (7 - px))) {
-				SDL_RenderDrawPoint(renderer, x + px, y + py);
+					color = 0xFF000000 | (palette[col & 0xF][2] << 16) | (palette[col & 0xF][1] << 8) | palette[col & 0xF][0];
+			} else {
+					color = 0xFF000000 | (palette[(col >> 4) & 0xF][2] << 16) | (palette[(col >> 4) & 0xF][1] << 8) | palette[(col >> 4) & 0xF][0];
 			}
+
+			raw_video_out[y * SCREEN_WIDTH + x] = color;
 		}
 	}
 }
@@ -55,11 +64,26 @@ void draw_buffer() {
 	for (int y = 0; y < SCREEN_HEIGHT; y += 8) {
 		for (int x = 0; x < SCREEN_WIDTH; x += 8) {
 			uint8_t c = video_ram[i++];
-			draw_char(x, y, c);
+			uint8_t col = video_ram[i++];
+			draw_char(x, y, c, col);
 		}
 	}
 
+	SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(raw_video_out, SCREEN_WIDTH, SCREEN_HEIGHT, 32, SCREEN_WIDTH * 4, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
+	if (surface == NULL) {
+		fprintf(stderr, "SDL_CreateRGBSurfaceFrom failed: %s\n", SDL_GetError());
+		return;
+	}
+	SDL_Texture* text = SDL_CreateTextureFromSurface(renderer, surface);
+	if (text == NULL) {
+		fprintf(stderr, "SDL_CreateTextureFromSurface failed: %s\n", SDL_GetError());
+		SDL_FreeSurface(surface);
+		return;
+	}
+	SDL_FreeSurface(surface);
+	SDL_RenderCopy(renderer, text, NULL, NULL);
 	SDL_RenderPresent(renderer);
+	SDL_DestroyTexture(text);
 }
 
 // Enable raw mode (non-canonical, no echo)
@@ -140,6 +164,7 @@ int main(int argc, char* argv[]) {
 	set_nonblocking_mode();
 
 	char c;
+	int counter = 128;
 	while (quit == false && cpu.IO[POWER_OFF_IO] == 0x00) {
 		int n = 0;
 		n = read(STDIN_FILENO, &c, 1);
@@ -154,11 +179,15 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		SDL_RenderClear(renderer);	
 		cpu.executeNext();
-		draw_buffer();
 		
+		if (--counter == 0) {
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+			SDL_RenderClear(renderer);	
+			draw_buffer();
+			counter = 128;
+		}
+
 		if (cpu.IO[SWAP_BUFFERS] == 0x01) {
 			buffbank = !buffbank;
 			cpu.IO[SWAP_BUFFERS] = 0;
