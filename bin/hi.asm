@@ -43,14 +43,14 @@ _loop:
 
 	inc x6
 	cmp x6, #32
-	cz %incLine
+	cz %next_line
 	ld a, w0
 	sub #0
 	bnz %_loop
 _inf:
 	ld a, #65
 	jmp %_inf
-incLine:
+next_line:
 	ld x6, #0
 	inc x7
 	ret
