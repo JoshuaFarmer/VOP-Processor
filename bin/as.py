@@ -166,7 +166,12 @@ opcodes = {
 	"NANDR,R":158,
 	"XORR,R":159,
 	"LDR,R":160,
-	
+
+	"PEEKA,-R":161,
+	"PEEKA,+R":162,
+	"POKEA,-R":163,
+	"POKEA,+R":164,
+
 	"REP":0xF0,
 	"END":0xF1,
 }
@@ -222,7 +227,15 @@ def decode(_op, labels):
 				retstr += "F#"+str(str(op[i])[2:])
 				break
 			elif str(op[i])[0] == f".":
-				retstr += str(str(op[i]))
+				retstr += str(op[i])
+				break
+			elif str(op[i])[0] == f"-":
+				res = decode("TEMP:\\" + str(op[i])[1:], labels)
+				retstr += "-" + res[0].split(":")[1]
+				break
+			elif str(op[i])[0] == f"+":
+				res = decode("TEMP:\\" + str(op[i])[1:], labels)
+				retstr += "+" + res[0].split(":")[1]
 				break
 			elif str(op[i])[0] == f"%":
 				# if not found, assume in first pass
