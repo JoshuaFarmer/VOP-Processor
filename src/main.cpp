@@ -166,8 +166,7 @@ int main(int argc, char* argv[]) {
 	char c;
 	int counter = 128;
 	while (quit == false && cpu.IO[POWER_OFF_IO] == 0x00) {
-		int n = 0;
-		n = read(STDIN_FILENO, &c, 1);
+		int n = read(STDIN_FILENO, &c, 1);
 		
 		if (n == 1) {
 			cpu.IO[TERMINAL_I] = c;
@@ -191,9 +190,8 @@ int main(int argc, char* argv[]) {
 		if (cpu.IO[SWAP_BUFFERS] == 0x01) {
 			buffbank = !buffbank;
 			cpu.IO[SWAP_BUFFERS] = 0;
-		} if (cpu.IO[TERMINAL])
-		{
-			std::cout << (char)cpu.IO[TERMINAL];
+		} if (cpu.IO[TERMINAL]) {
+			std::cout << (char)cpu.IO[TERMINAL] << std::flush;
 			cpu.IO[TERMINAL] = 0;
 		}
 	}

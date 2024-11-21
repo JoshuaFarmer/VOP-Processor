@@ -1047,6 +1047,7 @@ U_RET:
 				break;
 			case IN: {
 				Acc = IO[Sn[0]];
+				IO[Sn[0]] = 0;
 				}
 				break;
 			case CLI:
