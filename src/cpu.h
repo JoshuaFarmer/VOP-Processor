@@ -1288,30 +1288,26 @@ U_RET:
 
 			case PEEK_A_Sn_SRn:
 			{
-				int Sidx = fetch(PC++, P0) & 0b11;
 				int Ridx = fetch(PC++, P0) & 0xF;
-				Acc = peek(Sn[Sidx] - Rn[Ridx], P1);
+				Acc = peek(Sn[0] - Rn[Ridx], P1);
 			} break;
 
 			case PEEK_A_Sn_ARn:
 			{
-				int Sidx = fetch(PC++, P0) & 0b11;
 				int Ridx = fetch(PC++, P0) & 0xF;
-				Acc = peek(Sn[Sidx] + Rn[Ridx], P1);
+				Acc = peek(Sn[0] + Rn[Ridx], P1);
 			} break;
 
 			case POKE_A_Sn_SRn:
 			{
-				int Sidx = fetch(PC++, P0) & 0b11;
 				int Ridx = fetch(PC++, P0) & 0xF;
-				poke(Acc, Sn[Sidx] - Rn[Ridx], P1);
+				poke(Acc, Sn[0] - Rn[Ridx], P1);
 			} break;
 
 			case POKE_A_Sn_ARn:
 			{
-				int Sidx = fetch(PC++, P0) & 0b11;
 				int Ridx = fetch(PC++, P0) & 0xF;
-				poke(Acc, Sn[Sidx] + Rn[Ridx], P1);
+				poke(Acc, Sn[0] + Rn[Ridx], P1);
 			} break;
 
 			// LOOPS
