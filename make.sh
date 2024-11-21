@@ -1,1 +1,1 @@
-g++ "src/main.cpp" -o "bin/vop" -Wall -Wextra -Werror -Wpedantic -lSDL2 -O3 --fast-math
+g++ "src/main.cpp" -o "bin/vop" -Wall -Wextra -Werror -Wpedantic -lSDL2 -O3

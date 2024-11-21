@@ -1380,7 +1380,7 @@ U_RET:
 		}
 
 		size_t x = fread(&ram[off], 1, len, fp);
-		printf("%lu bytes read\n", x);
+		printf("%u bytes read\n", (uint32_t)x);
 		fclose(fp);
 	}
 
