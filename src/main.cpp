@@ -49,9 +49,9 @@ void draw_char(int _x, int _y, uint8_t c, uint8_t col) {
 
 			// Set color for the pixel: 1 is foreground, 0 is background
 			if (char_bitmap[py] & (1 << (7 - px))) {
-					color = 0xFF000000 | (palette[col & 0xF][2] << 16) | (palette[col & 0xF][1] << 8) | palette[col & 0xF][0];
+				color = 0xFF000000 | (palette[col & 0xF][2] << 16) | (palette[col & 0xF][1] << 8) | palette[col & 0xF][0];
 			} else {
-					color = 0xFF000000 | (palette[(col >> 4) & 0xF][2] << 16) | (palette[(col >> 4) & 0xF][1] << 8) | palette[(col >> 4) & 0xF][0];
+				color = 0xFF000000 | (palette[(col >> 4) & 0xF][2] << 16) | (palette[(col >> 4) & 0xF][1] << 8) | palette[(col >> 4) & 0xF][0];
 			}
 
 			raw_video_out[y * SCREEN_WIDTH + x] = color;

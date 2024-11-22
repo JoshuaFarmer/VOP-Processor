@@ -1371,6 +1371,7 @@ U_RET:
 	void load_from_file(const char* path, int off)
 	{
 		FILE* fp = fopen(path, "rb");
+		if (!fp) exit(1);
 		fseek(fp, 0, SEEK_END);
 		size_t len = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
