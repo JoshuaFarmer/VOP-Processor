@@ -216,7 +216,7 @@ class VOP {
 	uint16_t Res=0x0000;
 	uint16_t Acc=0x0000;
 	uint16_t Rn[16]={0x0000};
-	uint16_t Sn[4]={0x5000, 0x6000, 0x7000, 0x8000};
+	uint16_t Sn[16]={0x5000, 0x6000, 0x7000, 0x8000};
 	uint16_t PC=0x0000;
 	uint8_t  P0=0x0000, P1=0x0000;
 
@@ -257,7 +257,7 @@ class VOP {
 	}
 
 	void push(uint16_t value) {
-		int n = fetch(PC++, P0) & 0b11;
+		int n = fetch(PC++, P0) & 0xF;
 		if (n > 2) n = 2;
 		if (data_format == false) {
 			write(Sn[n]--, P1, value);
@@ -268,7 +268,7 @@ class VOP {
 	}
 
 	uint16_t pop() {
-		int n = fetch(PC++, P0) & 0b11;
+		int n = fetch(PC++, P0) & 0xF;
 		if (n > 2) n = 2;
 		int value = 0;
 		if (data_format == false) {
@@ -444,22 +444,22 @@ class VOP {
 				} break;
 			case XC_Rn_Sn: {
 				int n0  = fetch(PC++, P0) & 0xF;
-				int n1  = fetch(PC++, P0) & 0b11;
+				int n1  = fetch(PC++, P0) & 0xF;
 
 				Tmp = Rn[n0];
 				Rn[n0] = Sn[n1];
 				Sn[n1] = Tmp;
 				} break;
 			case XC_Sn1_Sn2: {
-				int n0  = fetch(PC++, P0) & 0b11;
-				int n1  = fetch(PC++, P0) & 0b11;
+				int n0  = fetch(PC++, P0) & 0xF;
+				int n1  = fetch(PC++, P0) & 0xF;
 
 				Tmp = Sn[n0];
 				Sn[n0] = Sn[n1];
 				Sn[n1] = Tmp;
 				} break;
 			case XC_A_Sn: {
-				int n0  = fetch(PC++, P0) & 0b11;
+				int n0  = fetch(PC++, P0) & 0xF;
 
 				Tmp = Acc;
 				Acc = Sn[n0];
@@ -552,7 +552,7 @@ class VOP {
 				} break;
 			case BLCKGET_Sn: {
 				int idx  = fetch(PC++, P0);
-				int addr = Sn[idx & 0b11];
+				int addr = Sn[idx & 0xF];
 				int count = Rn[0];
 
 				for (int off = 0, r = 0; r < count && r < 16; off+=2 && ++r) {
@@ -561,7 +561,7 @@ class VOP {
 				} break;
 			case BLCKSET_Sn: {
 				int idx  = fetch(PC++, P0);
-				int addr = Sn[idx & 0b11];
+				int addr = Sn[idx & 0xF];
 				int count = Rn[0];
 				for (int off = 0, r = 0; r < count && r < 16; off+=2 && ++r) {
 					poke(Rn[r], addr+off, P1);
@@ -579,23 +579,23 @@ class VOP {
 				} break;
 			case LD_A_Sn: {
 				int idx = fetch(PC++, P0);
-				int n0  = idx & 0b11;
+				int n0  = idx & 0xF;
 				Acc = Sn[n0];
 				} break;
 			case LD_Sn_A: {
 				int idx = fetch(PC++, P0);
-				int n0  = idx & 0b11;
+				int n0  = idx & 0xF;
 				Sn[n0] = Acc;
 				} break;
 			case LD_Rn_Sn: {
 				int n0  = fetch(PC++, P0) & 0xF;
-				int n1  = fetch(PC++, P0) & 0b11;
+				int n1  = fetch(PC++, P0) & 0xF;
 
 				Rn[n0] = Sn[n1];
 				} break;
 			case LD_Sn_Rn: {
-				int n0  = fetch(PC++, P0) & 0b11;
-				int n1  = fetch(PC++, P0) & 0b11;
+				int n0  = fetch(PC++, P0) & 0xF;
+				int n1  = fetch(PC++, P0) & 0xF;
 
 				Sn[n0] = Sn[n1];
 				} break;
@@ -611,7 +611,7 @@ class VOP {
 				Rn[idx] = i16;
 				} break;
 			case LDI_Sn_i16: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				int i16  = fetch(PC++, P0);
 				    i16 |= fetch(PC++, P0) << 8;
 				Sn[idx] = i16;
@@ -636,7 +636,7 @@ class VOP {
 				}
 				break;
 			case ADD_Sn_A: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Acc;
 				Res = Acc + peek(Sn[idx], P1);
 				flags();
@@ -661,7 +661,7 @@ class VOP {
 				}
 				break;
 			case ADD_Sn: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Acc;
 				Res = Acc + Sn[idx];
 				flags();
@@ -688,7 +688,7 @@ class VOP {
 				}
 				break;
 			case SUB_Sn_A: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Acc;
 				Res = Acc - peek(Sn[idx], P1);
 				flags();
@@ -713,7 +713,7 @@ class VOP {
 				}
 				break;
 			case SUB_Sn: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Acc;
 				Res = Acc - Sn[idx];
 				flags();
@@ -738,7 +738,7 @@ class VOP {
 				}
 				break;
 			case CMP_Sn_A: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Acc;
 				Res = Acc - peek(Sn[idx], P1);
 				flags();
@@ -760,7 +760,7 @@ class VOP {
 				}
 				break;
 			case CMP_Sn: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Acc;
 				Res = Acc - Sn[idx];
 				flags();
@@ -794,11 +794,11 @@ class VOP {
 				} break;
 
 			case NOT_Sn: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				poke(~peek(Sn[idx], P1), Sn[idx], P1);
 				} break;
 			case NEG_Sn: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				poke(-peek(Sn[idx], P1), Sn[idx], P1);
 				} break;
 			
@@ -819,7 +819,7 @@ class VOP {
 				}
 				break;
 			case AND_Sn: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Acc;
 				Res = Acc & peek(Sn[idx], P1);
 				Acc = Res;
@@ -858,7 +858,7 @@ class VOP {
 				}
 				break;
 			case OR_Sn: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Acc;
 				Res = Acc | peek(Sn[idx], P1);
 				Acc = Res;
@@ -897,7 +897,7 @@ class VOP {
 				}
 				break;
 			case XOR_Sn: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Acc;
 				Res = Acc ^ peek(Sn[idx], P1);
 				Acc = Res;
@@ -944,7 +944,7 @@ R_JUMP_LA:
 			case REL_JUMP_i8: {
 				int x = fetch(PC++, P0);
 				if (x >> 7) {
-					x = (x & 0b1111111);
+					x = (x & 0xF11111);
 					PC -= x;
 				} else {
 					PC += x;
@@ -1111,7 +1111,7 @@ U_RET:
 			} break;
 
 			case DEC_Sn: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Sn[idx];
 				Res = Sn[idx] - 1;
 				flags();
@@ -1119,7 +1119,7 @@ U_RET:
 			} break;
 
 			case INC_Sn: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				Tmp = Sn[idx];
 				Res = Sn[idx] + 1;
 				flags();
@@ -1139,13 +1139,13 @@ U_RET:
 			} break;
 
 			case DEC_Sn_AT: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				int old = peek(Rn[idx]);
 				poke(old-1, Sn[idx]);
 			} break;
 
 			case INC_Sn_AT: {
-				int idx = fetch(PC++, P0) & 0b11;
+				int idx = fetch(PC++, P0) & 0xF;
 				int old = peek(Sn[idx]);
 				poke(old+1, Sn[idx]);
 			} break;
@@ -1159,13 +1159,13 @@ U_RET:
 
 			case NEAR_POKE_Rn: {
 				int idx0 = (fetch(PC++, P0)) & 0xF;
-				int idx1 = (fetch(PC++, P0)) & 0b11;
+				int idx1 = (fetch(PC++, P0)) & 0xF;
 				poke(Rn[idx0], Sn[idx1], P0);
 			} break;
 
 			case NEAR_PEEK_Rn: {
 				int idx0 = (fetch(PC++, P0)) & 0xF;
-				int idx1 = (fetch(PC++, P0)) & 0b11;
+				int idx1 = (fetch(PC++, P0)) & 0xF;
 				Rn[idx0] = peek(Sn[idx1], P0);
 			} break;
 
