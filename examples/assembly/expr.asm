@@ -10,7 +10,6 @@ _start:
 	ld s3, %stack
 	ld s0, %data
 	call %_gets
-	ld z7, %data
 _inf:
 	jmp %_inf
 
@@ -21,11 +20,13 @@ _gets:
 _l0:
 	in
 	cmp #0
-	bz %getKey
+	bz %_l0
+	cmp #13
+	retz
+	cmp #10
+	retz
 _put:
 	xc x7, s0
 	out
 	xc x7, s0
-	cmp #13
-	retz
 	jmp %_l0

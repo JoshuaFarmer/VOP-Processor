@@ -163,18 +163,65 @@ int main(int argc, char* argv[]) {
 	enable_raw_mode();
 	set_nonblocking_mode();
 
-	char c;
 	int counter = 128;
+	bool upper = false;
 	while (quit == false && cpu.IO[POWER_OFF_IO] == 0x00) {
-		int n = read(STDIN_FILENO, &c, 1);
-		
-		if (n == 1) {
-			cpu.IO[TERMINAL_I] = c;
-		}
-
 		while (SDL_PollEvent(&event) != 0) {
 			if (event.type == SDL_QUIT) {
 				quit = true;
+			}
+
+			if (event.type == SDL_KEYDOWN) {
+				SDL_Keycode key = event.key.keysym.sym;
+				if (strncmp(SDL_GetKeyName(key), "Left Shift", 1000) == 0) {
+					upper = !upper;
+				} else {
+					if (upper) {
+						switch (key) {
+							case '1':
+								key = '!';
+								break;
+							case '2':
+								key = '"';
+								break;
+							case '3':
+								key = '#';
+								break;
+							case '4':
+								key = '$';
+								break;
+							case '5':
+								key = '%';
+								break;
+							case '6':
+								key = '^';
+								break;
+							case '7':
+								key = '&';
+								break;
+							case '8':
+								key = '*';
+								break;
+							case '9':
+								key = '(';
+								break;
+							case '0':
+								key = ')';
+								break;
+							case '-':
+								key = '_';
+								break;
+							case '=':
+								key = '+';
+								break;
+							default:
+								key = toupper(key);
+						}
+						cpu.IO[TERMINAL_I] = key;
+					}
+					else
+						cpu.IO[TERMINAL_I] = key;
+				}
 			}
 		}
 		

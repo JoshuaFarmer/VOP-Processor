@@ -2,7 +2,7 @@ REGISTERS:
 	A	16 bit accumulator
 	P	16 bit program counter
 	Rn	16 bit register bank (of 16 registers)
-	Sn	16 bit stack pointer bank (of 4 registers)
+	Sn	16 bit stack pointer bank (of 16 registers)
 	P0	8 bit code page
 	P1	8 bit data page
 	BS	1 bit busy flag, unused
