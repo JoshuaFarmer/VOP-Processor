@@ -1,44 +1,70 @@
 	org 1024
 	define stack 65535
-	define data 128
-	define variables 0
 	; FIRST PROGRAM TO USE NEW STACK POINTERS!! (s4 to z7)
 	; yes, this cpu has 16 stack pointers/address registers...
 	; PROGRAMMERS NOTE :
-	; DONT USE S0 FOR ADDRESSES,
-	; IT IS OVEWRITTEN ALOT WITHOUT SAVING
-	; IN THIS CODE
+	; z0 is the text pos, dont mess with!
 _start:
-	push .#2, s3
-	pop p1, s3
+	; set up page
 	ld s3, %stack
-	ld s1, %data
-	call %_gets
+	push .#1, s3
+	pop p1, s3
+	ld s1, #2
+	ld s0, %prompt
+	call %puts
+
+	ld z0, %keyboard
+	call %gets
 _inf:
 	jmp %_inf
 
-	; s1 is the input address
-	; x6 is the length
-_gets:
-	ld s0, #3
-	ld x7, #2
-	ld x6, #0
-_f0:
+puts:
+	xor w0, w0
+_puts:
+	peek a, .+w0
+	and #255
+	cmp #0
+	retz
+	inc w0
+	xc s0, s1
+	out
+	xc s0, s1
+	jmp %_puts
+
+get_from_port:
 	in
 	cmp #0
-	bz %_f0
-	cmp #10
-	bz %_f2
-_f1:
-	xc x7, s0
-	out
-	xc x7, s0
-	poke a, s1
-	inc s1
-	inc x6
-	jmp %_l0
-_f2:
-	ld x5, s1
-	sub x5, x6
-	ld s1, x5
+	bz %get_from_port
 	ret
+
+gets:
+	ld s0, #3
+	call %get_from_port
+	ld w0, a
+	poke w0, .z0
+	inc z0
+	ld s0, #2
+	out
+	cmp #13
+	bnz %gets
+
+	ld s0, %newl
+	call %puts
+	ld s0, %keyboard
+	call %puts
+	ret
+
+prompt:
+	ds ">"
+	db 0
+newl:
+	db 13
+	db 10
+	db 0
+run:
+	ds "RUN"
+	db 0
+load:
+	ds "LOAD"
+	db 0
+keyboard:

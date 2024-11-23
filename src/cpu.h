@@ -1387,7 +1387,7 @@ U_RET:
 
 	void display() {
 		printf("PC: %.4x\n", PC);
-		printf("A : %.4x   S0: %.4x   S1: %.4x   S2: %.4x   S3: %.4x\n", Acc, Sn[0], Sn[1], Sn[2], Sn[3]);
+		printf("A : %.4x\n", Acc);
 		printf("Te: %.4x   Re: %.4x   P0: %.4x   P1: %.4x\n", Tmp, Res, P0, P1);
 		for (int i = 0; i < 8; i += 4) {
 			printf("W%x: %.4x   W%x: %.4x   W%x: %.4x   W%x: %.4x\n", i, Rn[i], i+1, Rn[i+1], i+2, Rn[i+2], i+3, Rn[i+3]);
@@ -1395,6 +1395,14 @@ U_RET:
 
 		for (int i = 8; i < 16; i += 4) {
 			printf("X%x: %.4x   X%x: %.4x   X%x: %.4x   X%x: %.4x\n", i-8, Rn[i], i-7, Rn[i+1], i-6, Rn[i+2], i-5, Rn[i+3]);
+		}
+
+		for (int i = 0; i < 8; i += 4) {
+			printf("S%x: %.4x   S%x: %.4x   S%x: %.4x   S%x: %.4x\n", i, Sn[i], i+1, Sn[i+1], i+2, Sn[i+2], i+3, Sn[i+3]);
+		}
+
+		for (int i = 8; i < 16; i += 4) {
+			printf("Z%x: %.4x   Z%x: %.4x   Z%x: %.4x   Z%x: %.4x\n", i-8, Sn[i], i-7, Sn[i+1], i-6, Sn[i+2], i-5, Sn[i+3]);
 		}
 
 		printf("STACK: (S2 - 8) TO (S2 + 8)\n");
