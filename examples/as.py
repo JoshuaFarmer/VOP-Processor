@@ -216,6 +216,10 @@ def decode(_op, labels):
 				retstr += "S"
 				idx.append(x)
 				x = 8
+			elif str(op[i]) == f"Z{x}":
+				retstr += "S"
+				idx.append(x + 8)
+				x = 8
 			elif str(op[i]) == f"A":
 				retstr += "A"
 				break
