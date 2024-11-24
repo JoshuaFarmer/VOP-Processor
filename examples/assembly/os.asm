@@ -132,6 +132,12 @@ cmd:
 	call %strcmp
 	cmp #1
 	cz %set_var
+
+	ld s0, %keyboard
+	ld s1, %deref
+	call %strcmp
+	cmp #1
+	cz %deref_var
 	ret
 
 	; inp = a
@@ -267,6 +273,58 @@ set_var_after:
 set_var_end:
 	ret
 
+deref_var:
+	; you cannot add values to
+	; address registers,
+	; so with swap with a
+	; and do it that way
+	ld s0, %keyboard
+	xc a, s0
+	add #6
+	xc a, s0
+
+	; and you cant load into
+	; a from local page
+	peek w0, .s0
+	ld a, w0
+
+	; i can't count the amount of times
+	; i have forgot that it loads
+	; 16 bits, not 8 bits
+	; this has caused so much
+	; headache that i wanna break
+	; something
+	and #255
+	cmp #91
+	bc %set_var_end
+
+	; if its prefixed with "$"
+	; assume its a variable
+	; not a literal
+	peek w0, .s0
+	ld w5, #255
+	and w0, w5
+	cmp w0, #36
+	bz %deref_variable
+deref_lit:
+	call %string_to_hex
+	ld w0, a
+	jmp %deref_var_after
+deref_variable:
+	inc s0
+	peek w0, .s0
+	and w0, w5
+	ld a, w0
+	call %_get_var
+	ld s0, a
+	peek w0, .s0
+deref_var_after:
+	peek w0, .z1
+	ld a, w0
+	call %print_hex
+deref_var_end:
+	ret
+
 echo_msg:
 	ld s0, %keyboard
 	xc a, s0
@@ -331,6 +389,9 @@ get:
 	db 0
 set:
 	ds "set"
+	db 0
+deref:
+	ds "deref"
 	db 0
 keyboard:
 	db 0
