@@ -58,10 +58,11 @@ gets:
 
 	poke w0, .z0
 	ld s0, #2
-	out
 
 	cmp #8
 	bz %back
+
+	out
 
 	inc z0
 	cmp #13
@@ -74,7 +75,11 @@ gets:
 	inc z0
 	ret
 back:
+	ld x7, z0
+	cmp x7, %keyboard
+	bz %gets
 	dec z0
+	out
 	ld a, #32
 	out
 	ld a, #8
@@ -227,7 +232,7 @@ set_var:
 	ld a, w0
 	and #255
 	cmp #91
-	bc %get_var_end
+	bc %set_var_end
 
 	; get the address
 	call %_get_var
@@ -237,12 +242,27 @@ set_var:
 	ld a, %keyboard
 	add #6
 	ld s0, a
+
+	; "$"
+	peek w0, .s0
+	ld w5, #255
+	and w0, w5
+	cmp w0, #36
+	bz %set_var_var
+set_var_literal:
 	call %string_to_hex
-
-	; set value
 	ld w0, a
+	jmp %set_var_after
+set_var_var:
+	inc s0
+	peek w0, .s0
+	and w0, w5
+	ld a, w0
+	call %_get_var
+	ld s0, a
+	peek w0, .s0
+set_var_after:
 	poke w0, .z1
-
 	call %get_var
 set_var_end:
 	ret
