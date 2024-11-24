@@ -7,8 +7,6 @@
 	; z0 is the text pos, dont mess with!
 _start:
 	ld s3, %stack
-	ld a, #65
-	call %print_hex
 	push .#1, s3
 	pop p1, s3
 _inf:
@@ -23,7 +21,7 @@ _inf:
 
 	; A == name (A-Z)
 	; returns address in a
-_get_var:
+GetVariableAddress:
 	; (ord(name)-65) * 2 + 4096
 	sub #65
 	ld w0, #2
@@ -208,7 +206,7 @@ get_var:
 	bc %get_var_end
 
 	; get the address
-	call %_get_var
+	call %GetVariableAddress
 	ld z0, a
 	call %print_hex
 
@@ -241,7 +239,7 @@ set_var:
 	bc %set_var_end
 
 	; get the address
-	call %_get_var
+	call %GetVariableAddress
 	ld z1, a
 
 	; get value
@@ -264,7 +262,7 @@ set_var_var:
 	peek w0, .s0
 	and w0, w5
 	ld a, w0
-	call %_get_var
+	call %GetVariableAddress
 	ld s0, a
 	peek w0, .s0
 set_var_after:
@@ -301,27 +299,27 @@ deref_var:
 	; if its prefixed with "$"
 	; assume its a variable
 	; not a literal
-	peek w0, .s0
-	ld w5, #255
-	and w0, w5
-	cmp w0, #36
+	cmp #36
 	bz %deref_variable
 deref_lit:
 	call %string_to_hex
-	ld w0, a
+	ld z1, a
+	peek w0, .z1
 	jmp %deref_var_after
 deref_variable:
 	inc s0
 	peek w0, .s0
-	and w0, w5
 	ld a, w0
-	call %_get_var
-	ld s0, a
-	peek w0, .s0
-deref_var_after:
+	and #255
+	call %GetVariableAddress
+	ld z1, a
 	peek w0, .z1
+deref_var_after:
 	ld a, w0
 	call %print_hex
+	ld s1, #2
+	ld s0, %newl
+	call %puts
 deref_var_end:
 	ret
 
