@@ -174,7 +174,7 @@ int main(int argc, char* argv[]) {
 			if (event.type == SDL_KEYDOWN) {
 				SDL_Keycode key = event.key.keysym.sym;
 				if (strncmp(SDL_GetKeyName(key), "Left Shift", 1000) == 0) {
-					upper = !upper;
+					upper = true;
 				} else {
 					if (upper) {
 						switch (key) {
@@ -221,6 +221,7 @@ int main(int argc, char* argv[]) {
 					}
 					else
 						cpu.IO[TERMINAL_I] = key;
+					upper = false;
 				}
 			}
 		}
