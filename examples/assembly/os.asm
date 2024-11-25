@@ -307,11 +307,17 @@ deref_lit:
 	peek w0, .z1
 	jmp %deref_var_after
 deref_variable:
+	; get variable address
 	inc s0
 	peek w0, .s0
 	ld a, w0
 	and #255
 	call %GetVariableAddress
+
+	; get value
+	ld z1, a
+	peek w0, .z1
+	ld a, w0
 	ld z1, a
 	peek w0, .z1
 deref_var_after:
