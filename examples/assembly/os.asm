@@ -3,8 +3,6 @@
 	define variables 4096
 	; FIRST PROGRAM TO USE NEW STACK POINTERS!! (s4 to z7)
 	; yes, this cpu has 16 stack pointers/address registers...
-	; PROGRAMMERS NOTE :
-	; z0 is the text pos, dont mess with!
 _start:
 	ld s3, %stack
 	push .#1, s3
