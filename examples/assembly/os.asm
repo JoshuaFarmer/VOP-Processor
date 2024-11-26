@@ -30,6 +30,23 @@ GetVariableAddress:
 	add %variables
 	ret
 
+	; A == Name, W0 == value
+SetVariable:
+	call %GetVariableAddress
+	ld w1, a
+	ld z7, a
+	poke w0, .z7
+	ret
+
+	; A == Name, A == return val
+GetVariable:
+	call %GetVariableAddress
+	ld w1, a
+	ld z7, a
+	peek w1, .z7
+	ld a, w1
+	ret
+
 puts:
 	xor w0, w0
 _puts:
