@@ -323,38 +323,57 @@ def get_opcode(text, labels):
 	sz = len(bytearr)
 	return sz, bytearr
 
+# Modified first_pass function to handle "include" directive
 def first_pass(text):
 	labels = {}
 	byteOff = 0
-	for l in text.split("\n"):
+	lines = text.split("\n")
+
+	i = 0  # Track line number
+	while i < len(lines):
+		l = lines[i].strip()
+
 		if l:
-			l = l.strip()
-			if l[0] == ';' or l[0] == '!':
-				continue
+			# Handle the "include" directive
+			if l.startswith("include"):
+				# Get the file path from the include directive
+				parts = l.split(" ")
+				if len(parts) > 1:
+					include_file = parts[1].strip().strip("\"")
+					try:
+						# Read the content of the included file
+						with open(include_file, "r") as include_f:
+							included_text = include_f.read()
+							for x in included_text.split("\n"):
+								lines.append(x)
+					except FileNotFoundError:
+						print(f"Error: Included file '{include_file}' not found.")
+						exit(1)
+				else:
+					print("Error: 'include' directive missing file path.")
+					exit(1)
+			elif l[0] == ';' or l[0] == '!':
+					pass  # Ignore comments
 			elif l[-1] == ':':
-				labels[l[0:-1].upper()] = byteOff
-				continue
+					labels[l[0:-1].upper()] = byteOff
 			elif l.split(" ")[0] == "org":
-				byteOff = int(l.split(" ")[1])
-				continue
+					byteOff = int(l.split(" ")[1])
 			elif l.split(" ")[0] == "db":
-				byteOff += 1
-				continue
-			elif l.split(" ")[0] == "define":
-				labels[l.split(" ")[1].upper()] = int(l.split(" ")[2])
-				continue
-			elif l.split("\"")[0].strip() == "ds":
-				for c in l.split("\"")[1]:
 					byteOff += 1
-				continue
+			elif l.split(" ")[0] == "define":
+					labels[l.split(" ")[1].upper()] = int(l.split(" ")[2])
+			elif l.split("\"")[0].strip() == "ds":
+					for c in l.split("\"")[1]:
+						byteOff += 1
 			else:
-				byteOff += len(get_opcode(l, labels)[1])
-	return labels
+					byteOff += len(get_opcode(l, labels)[1])
+		i += 1  # Move to the next line
+	return labels, lines
 
 def second_pass(text, labels):
 	byteOff = 0
 	arr = []
-	for l in text.split("\n"):
+	for l in text:
 		if l:
 			l = l.strip()
 			if l[0] == ';' or l[0] == '!':
@@ -363,6 +382,8 @@ def second_pass(text, labels):
 				continue
 			elif l.split(" ")[0] == "org":
 				byteOff = int(l.split(" ")[1])
+				continue
+			elif l.split(" ")[0] == "include":
 				continue
 			elif l.split(" ")[0] == "define":
 				continue
@@ -382,11 +403,12 @@ def second_pass(text, labels):
 					arr.append(x)
 	return arr
 
+# Running the script
 for i in range(len(argv)):
 	if argv[i] == "-s":
-		if i < len(argv)-2:
-			inputf = argv[i+1]
-			outf = argv[i+2]
+		if i < len(argv) - 2:
+			inputf = argv[i + 1]
+			outf = argv[i + 2]
 
 			readFile = open(inputf, "r")
 			writeFile = open(outf, "wb")
@@ -394,7 +416,7 @@ for i in range(len(argv)):
 			text = readFile.read()
 			readFile.close()
 
-			labels = first_pass(text)
+			labels, text = first_pass(text)
 			out = second_pass(text, labels)
 
 			writeFile.write(bytearray(out))
