@@ -1,4 +1,14 @@
 	; all data
+true:
+	ds "true"
+	db 10
+	db 13
+	db 0
+false:
+	ds "false"
+	db 10
+	db 13
+	db 0
 cat:
 	ds " /\_/\"
 	db 13
@@ -20,24 +30,27 @@ newl:
 	db 13
 	db 10
 	db 0
-run:
+cmd_run:
 	ds "run"
 	db 0
-load:
+cmd_load:
 	ds "load"
 	db 0
-echo:
+cmd_echo:
 	ds "echo"
 	db 0
-get:
+cmd_get:
 	ds "get"
 	db 0
-set:
+cmd_set:
 	ds "set"
 	db 0
-deref:
+cmd_deref:
 	ds "deref"
 	db 0
-data_is:
-	ds "IS"
+cmd_is:
+	ds "is"
+	db 0
+cmd_add:
+	ds "add"
 	db 0

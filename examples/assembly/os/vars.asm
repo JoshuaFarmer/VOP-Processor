@@ -21,7 +21,6 @@ SetVariable:
 	; A == Name, A == return val
 GetVariable:
 	call %GetVariableAddress
-	ld w1, a
 	ld z7, a
 	peek w1, .z7
 	ld a, w1

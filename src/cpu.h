@@ -260,8 +260,8 @@ class VOP {
 		int n = fetch(PC++, P0) & 0xF;
 		if (n > 2) n = 2;
 		if (data_format == false) {
-			write(Sn[n]--, P1, value);
-			write(Sn[n]--, P1, value >> 8);
+			poke(value, Sn[n], P1);
+			Sn[n] -= 2;
 		} else {
 			write(Sn[n]--, P1, value);
 		}
@@ -272,8 +272,8 @@ class VOP {
 		if (n > 2) n = 2;
 		int value = 0;
 		if (data_format == false) {
-			value |= fetch(Sn[n]++, P1) << 8;
-			value |= fetch(Sn[n]++, P1);
+			Sn[n] += 2;
+			value = peek(Sn[n], P1);
 		} else {
 			value |= fetch(Sn[n]++, P1);
 		}
