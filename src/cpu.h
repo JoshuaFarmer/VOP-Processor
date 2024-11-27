@@ -597,7 +597,7 @@ class VOP {
 				int n0  = fetch(PC++, P0) & 0xF;
 				int n1  = fetch(PC++, P0) & 0xF;
 
-				Sn[n0] = Sn[n1];
+				Sn[n0] = Rn[n1];
 				} break;
 			case LDI_A_i16: {
 				int i16  = fetch(PC++, P0);

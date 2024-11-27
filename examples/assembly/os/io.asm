@@ -29,6 +29,9 @@ GETS:
 	call %get_from_port
 	ld w0, a
 
+	cmp #13
+	bz %GETS_END
+
 	poke w0, .z0
 	ld s0, #2
 
@@ -36,11 +39,10 @@ GETS:
 	bz %back
 
 	out
-
 	inc z0
-	cmp #13
-	bnz %GETS
+	jmp %GETS
 
+GETS_END:
 	ld s0, %newl
 	call %PRINT
 	ld w0, #0

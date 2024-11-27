@@ -2,6 +2,10 @@
 	define stack 65535
 	define variables 4096
 	define keyboard 8192
+	define lines 16384
+	define line_len 32
+	define max_line 100
+
 	; FIRST PROGRAM TO USE NEW STACK POINTERS!! (s4 to z7)
 	; yes, this cpu has 16 stack pointers/address registers...
 _start:
@@ -24,50 +28,138 @@ _inf:
 
 CMD:
 	ld s0, %keyboard
+	ld s1, %cmd_assign
+	call %strcmp
+	cmp #1
+	bz %proc_assign
+
+	ld s0, %keyboard
 	ld s1, %cmd_echo
 	call %strcmp
 	cmp #1
-	cz %echo_msg
+	bz %proc_echo
 
 	ld s0, %keyboard
 	ld s1, %cmd_get
 	call %strcmp
 	cmp #1
-	cz %get_var
+	bz %proc_get
 
 	ld s0, %keyboard
 	ld s1, %cmd_set
 	call %strcmp
 	cmp #1
-	cz %set_var
+	bz %proc_set
 
 	ld s0, %keyboard
 	ld s1, %cmd_deref
 	call %strcmp
 	cmp #1
-	cz %deref_var
+	bz %proc_deref
 
 	ld s0, %keyboard
 	ld s1, %cmd_is
 	call %strcmp
 	cmp #1
-	cz %is_val_val
+	bz %proc_is
 
 	ld s0, %keyboard
 	ld s1, %cmd_add
 	call %strcmp
 	cmp #1
-	cz %add
+	bz %proc_add
 
 	ld s0, %keyboard
 	ld s1, %cmd_sub
 	call %strcmp
 	cmp #1
-	cz %sub
+	bz %proc_sub
+
+	ld s0, %keyboard
+	ld s1, %cmd_mul
+	call %strcmp
+	cmp #1
+	bz %proc_mul
+
+	ld s0, %keyboard
+	ld s1, %cmd_assign
+	call %strcmp
+	cmp #1
+	bz %proc_assign
+
+	ld s0, %keyboard
+	ld s1, %cmd_list
+	call %strcmp
+	cmp #1
+	bz %proc_list
+
+	ld s0, %keyboard
+	ld s1, %cmd_run
+	call %strcmp
+	cmp #1
+	bz %proc_run
+
+	; line num
+	ld s0, %keyboard
+	call %string_to_hex
+	ld s0, %keyboard
+	xc a, s0
+	add #5
+	xc a, s0
+	call %copy_to_line
 	ret
 
 	; CMDS
-sub:
+proc_run:
+	ld s1, #2
+	ld s0, %run_msg
+	call %PRINT
+
+	ld x1, #0
+	ld x2, %max_line
+proc_run_w0:
+	ld a, x1
+	call %get_line
+	ld s0, a
+	peek a, s0
+	cmp #0
+	bnz %run_line
+run_after:
+	inc x1
+	cmp x1, x2
+	bnz %proc_run_w0
+	ret
+run_line:
+	call %EXPR
+	jmp %run_after
+
+proc_list:
+	ld s1, #2
+	ld s0, %list_msg
+	call %PRINT
+
+	ld x1, #0
+	ld x2, %max_line
+proc_list_w0:
+	ld a, x1
+	call %get_line
+	ld s0, a
+	peek a, s0
+	cmp #0
+	bnz %print_list
+list_after:
+	inc x1
+	cmp x1, x2
+	bnz %proc_list_w0
+	ret
+print_list:
+	ld s1, #2
+	call %PRINT
+	ld s0, %newl
+	call %PRINT
+	jmp %list_after
+
+proc_sub:
 	ld s0, %keyboard
 	call %EXPR_SUB
 	call %print_hex
@@ -76,7 +168,16 @@ sub:
 	call %print
 	ret
 
-add:
+proc_mul:
+	ld s0, %keyboard
+	call %EXPR_MUL
+	call %print_hex
+	ld s0, %newl
+	ld s1, #2
+	call %print
+	ret
+
+proc_add:
 	ld s0, %keyboard
 	call %EXPR_ADD
 	call %print_hex
@@ -85,7 +186,7 @@ add:
 	call %print
 	ret
 
-is_val_val:
+proc_is:
 	ld s0, %keyboard
 	call %EXPR_IS
 	bz %is_equal
@@ -99,7 +200,7 @@ is_equal:
 	call %PRINT
 	ret
 
-echo_msg:
+proc_echo:
 	ld s0, %keyboard
 	xc a, s0
 	add #5
@@ -113,7 +214,7 @@ echo_msg:
 	call %PRINT
 	ret
 
-get_var:
+proc_get:
 	ld s0, %keyboard
 	xc a, s0
 	add #4
@@ -146,7 +247,7 @@ get_var:
 get_var_end:
 	ret
 
-set_var:
+proc_set:
 	ld s0, %keyboard
 	xc a, s0
 	add #4
@@ -186,11 +287,11 @@ set_var_var:
 	peek w0, .s0
 set_var_after:
 	poke w0, .z1
-	call %get_var
+	call %proc_get
 set_var_end:
 	ret
 
-deref_var:
+proc_deref:
 	; you cannot add values to
 	; address registers,
 	; so with swap with a

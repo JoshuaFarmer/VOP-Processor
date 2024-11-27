@@ -10,12 +10,11 @@ GetVariableAddress:
 	add %variables
 	ret
 
-	; A == Name, W0 == value
+	; A == Name, W7 == value
 SetVariable:
 	call %GetVariableAddress
-	ld w1, a
 	ld z7, a
-	poke w0, .z7
+	poke w7, .z7
 	ret
 
 	; A == Name, A == return val

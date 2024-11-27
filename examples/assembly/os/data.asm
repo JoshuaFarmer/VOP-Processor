@@ -33,8 +33,8 @@ newl:
 cmd_run:
 	ds "run"
 	db 0
-cmd_load:
-	ds "load"
+cmd_list:
+	ds "list"
 	db 0
 cmd_echo:
 	ds "echo"
@@ -56,4 +56,20 @@ cmd_add:
 	db 0
 cmd_sub:
 	ds "sub"
+	db 0
+cmd_mul:
+	ds "mul"
+	db 0
+cmd_assign:
+	ds "assign"
+	db 0
+list_msg:
+	ds "Listing Program.."
+	db 10
+	db 13
+	db 0
+run_msg:
+	ds "Running Program.."
+	db 10
+	db 13
 	db 0
