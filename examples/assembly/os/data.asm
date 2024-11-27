@@ -54,3 +54,6 @@ cmd_is:
 cmd_add:
 	ds "add"
 	db 0
+cmd_sub:
+	ds "sub"
+	db 0
