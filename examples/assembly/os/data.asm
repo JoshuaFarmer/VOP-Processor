@@ -60,6 +60,12 @@ cmd_sub:
 cmd_mul:
 	ds "mul"
 	db 0
+cmd_jump:
+	ds "jump"
+	db 0
+cmd_if:
+	ds "if"
+	db 0
 cmd_assign:
 	ds "assign"
 	db 0

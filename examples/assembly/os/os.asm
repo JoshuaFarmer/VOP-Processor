@@ -115,6 +115,7 @@ proc_run:
 	ld s0, %run_msg
 	call %PRINT
 
+	; line counter
 	ld x1, #0
 	ld x2, %max_line
 proc_run_w0:

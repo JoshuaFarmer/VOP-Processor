@@ -79,6 +79,30 @@ EXPR_MUL:
 	call %mul
 	ret
 
+_EXPR_JUMP:
+	ld s0, x5
+EXPR_JUMP:
+	xc a, s0
+	add #5
+	xc a, s0
+	call %FETCH_VALUE
+	ld x1, a
+	ret
+
+_EXPR_IF:
+	ld s0, x5
+EXPR_IF:
+	xc a, s0
+	add #3
+	xc a, s0
+	; evaluate expression
+	call %EXPR
+	ld w7, a
+	; if zero
+	cmp #0
+	bnz %EXPR
+	ret
+
 EXPR:
 	ld x5, s0
 
@@ -105,6 +129,18 @@ EXPR:
 	call %strcmp
 	cmp #1
 	bz %_EXPR_IS
+
+	ld s0, x5
+	ld s1, %cmd_jump
+	call %strcmp
+	cmp #1
+	bz %_EXPR_JUMP
+
+	ld s0, x5
+	ld s1, %cmd_if
+	call %strcmp
+	cmp #1
+	bz %_EXPR_IF
 
 	ld s0, x5
 	ld s1, %cmd_assign
