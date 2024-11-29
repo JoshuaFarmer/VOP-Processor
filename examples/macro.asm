@@ -7,13 +7,13 @@ macro jne x y addr
 	bnz $addr
 end
 
-macro inf
-	__inf:
-	jmp %__inf
+macro inf x
+	__inf$x:
+	jmp %__inf$x
 end
 
 	org 1024
 init:
 	inc w0
 	jne w0, #1, %init
-	inf
+	inf 0
