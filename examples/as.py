@@ -412,10 +412,10 @@ def res_macros(text):
 	for i in range(len(text)):
 		line = text[i].strip()
 		if line and line.split(" ")[0] == "macro":
-			macr_name = line.split(" ")[1][0:-1].strip()
+			macr_name = line.split(" ")[1].strip()
 			macr = []
 			in_macro = True
-			args = line.split(":")[1].strip().split(" ")
+			args = line.split(" ")[2:]
 		elif line and line.split(" ")[0] == "end":
 			macros[macr_name] = macr, args
 			in_macro = False
@@ -425,17 +425,17 @@ def res_macros(text):
 			if in_macro:
 				macr.append(line)
 			else:
-				if line.split(":")[0].strip() in macros:
-					macro = macros[line.split(":")[0].strip()]
+				if line.split(" ")[0].strip() in macros:
+					macro = macros[line.split(" ")[0].strip()]
 
 					# arguments
-					_args = line.split(":")[1].strip().split(",")
+					_args = line.split(" ")[1:]
 					for i in range(len(_args)):
-						_args[i] = _args[i].strip()
+						_args[i] = _args[i].strip().replace(",", "")
 
 					# macro statements
 					for x in macro[0]:
-						for i in range(len(macros[line.split(":")[0]][1])):
+						for i in range(len(macro[1])):
 							if f"${macro[1][i]}" in x:
 								x = x.replace(f"${macro[1][i]}", _args[i])
 						ret.append(x)
@@ -458,6 +458,7 @@ for i in range(len(argv)):
 
 			text = text.split("\n")
 			text = res_macros(text)
+			print(text)
 			labels, text = first_pass(text)
 			out = second_pass(text, labels)
 			writeFile.write(bytearray(out))
