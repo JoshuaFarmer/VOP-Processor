@@ -33,7 +33,7 @@ EXPR_IS:
 	bz %EXPR_IS_EQUAL
 	ld a, #0
 	ret
-EXPR_IS:
+EXPR_IS_EQUAL:
 	ld a, #1
 	ret
 

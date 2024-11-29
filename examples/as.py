@@ -1,6 +1,7 @@
 # simple (bad) assembler
 from sys import argv
 
+macros = {}
 opcodes = {
 	"PUSHA,S":0,
 	"POPA,S":1,
@@ -324,10 +325,9 @@ def get_opcode(text, labels):
 	return sz, bytearr
 
 # Modified first_pass function to handle "include" directive
-def first_pass(text):
+def first_pass(lines):
 	labels = {}
 	byteOff = 0
-	lines = text.split("\n")
 
 	i = 0  # Track line number
 	while i < len(lines):
@@ -403,6 +403,46 @@ def second_pass(text, labels):
 					arr.append(x)
 	return arr
 
+def res_macros(text):
+	macr = []
+	in_macro = False
+	macr_name = ""
+	ret = []
+	args = []
+	for i in range(len(text)):
+		line = text[i].strip()
+		if line and line.split(" ")[0] == "macro":
+			macr_name = line.split(" ")[1][0:-1].strip()
+			macr = []
+			in_macro = True
+			args = line.split(":")[1].strip().split(" ")
+		elif line and line.split(" ")[0] == "end":
+			macros[macr_name] = macr, args
+			in_macro = False
+			macr = []
+			macr_name = ""
+		else:
+			if in_macro:
+				macr.append(line)
+			else:
+				if line.split(":")[0] in macros:
+					macro = macros[line.split(":")[0].strip()]
+
+					# arguments
+					_args = line.split(":")[1].strip().split(",")
+					for i in range(len(_args)):
+						_args[i] = _args[i].strip()
+
+					# macro statements
+					for x in macro[0]:
+						for i in range(len(macros[line.split(":")[0]][1])):
+							if f"${macro[1][i]}" in x:
+								x = x.replace(f"${macro[1][i]}", _args[i])
+						ret.append(x)
+				else:
+					ret.append(line)
+	return ret
+
 # Running the script
 for i in range(len(argv)):
 	if argv[i] == "-s":
@@ -416,6 +456,8 @@ for i in range(len(argv)):
 			text = readFile.read()
 			readFile.close()
 
+			text = text.split("\n")
+			text = res_macros(text)
 			labels, text = first_pass(text)
 			out = second_pass(text, labels)
 
