@@ -13,7 +13,7 @@ macro inf
 end
 
 	org 1024
-start:
+init:
 	inc w0
-	jne w0, #1, %start
+	jne w0, #1, %init
 	inf
