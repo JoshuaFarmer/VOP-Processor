@@ -66,6 +66,9 @@ cmd_jump:
 cmd_if:
 	ds "if"
 	db 0
+cmd_print:
+	ds "print"
+	db 0
 cmd_assign:
 	ds "assign"
 	db 0

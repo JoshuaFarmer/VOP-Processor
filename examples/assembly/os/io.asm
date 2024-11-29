@@ -6,18 +6,16 @@ _PRINT:
 	cmp #0
 	retz
 	inc w0
-	xc s0, s1
-	out
-	xc s0, s1
+	outx #2
 	jmp %_PRINT
 
 	; print a
 PUTC:
-	ld s0, #2
-	out
+	outx #2
 	ret
 
 GETKEY:
+	ld s0, #3
 get_from_port:
 	in
 	cmp #0

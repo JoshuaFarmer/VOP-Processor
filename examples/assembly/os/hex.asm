@@ -30,13 +30,17 @@ string_to_hex:
 	ld w1, #4
 	ld w2, #255
 	ld w5, #15
-	ld w7, #5
 _char_to_nibble:
 	; get char
 	peek w0, .s0
 	and w0, w2
-	dec w7
+
+	; exit
+	cmp w0, #32
 	bz %_string_to_hex_exit
+	cmp w0, #0
+	bz %_string_to_hex_exit
+
 	cmp w0, #65
 	bc %_char_to_nibble_alpha
 	bz %_char_to_nibble_alpha

@@ -24,9 +24,7 @@ FETCH_VALUE_END:
 _EXPR_IS:
 	ld s0, x5
 EXPR_IS:
-	xc a, s0
-	add #3
-	xc a, s0
+	advn s0, #3
 	call %EXPR_TWO_ARGS
 
 	cmp w7, x3
@@ -48,9 +46,7 @@ EXPR_TWO_ARGS:
 _EXPR_ADD:
 	ld s0, x5
 EXPR_ADD:
-	xc a, s0
-	add #4
-	xc a, s0
+	advn s0, #4
 	call %EXPR_TWO_ARGS
 	add w7, x3
 	ld a, w7
@@ -59,9 +55,7 @@ EXPR_ADD:
 _EXPR_SUB:
 	ld s0, x5
 EXPR_SUB:
-	xc a, s0
-	add #4
-	xc a, s0
+	advn s0, #4
 	call %EXPR_TWO_ARGS
 	sub w7, x3
 	ld a, w7
@@ -70,9 +64,7 @@ EXPR_SUB:
 _EXPR_MUL:
 	ld s0, x5
 EXPR_MUL:
-	xc a, s0
-	add #4
-	xc a, s0
+	advn s0, #4
 	call %EXPR_TWO_ARGS
 	ld w0, w7
 	ld w1, x3
@@ -82,9 +74,7 @@ EXPR_MUL:
 _EXPR_JUMP:
 	ld s0, x5
 EXPR_JUMP:
-	xc a, s0
-	add #5
-	xc a, s0
+	advn s0, #5
 	call %FETCH_VALUE
 	ld x1, a
 	ret
@@ -92,9 +82,7 @@ EXPR_JUMP:
 _EXPR_IF:
 	ld s0, x5
 EXPR_IF:
-	xc a, s0
-	add #3
-	xc a, s0
+	advn s0, #3
 	; evaluate expression
 	call %EXPR
 	ld w7, a
@@ -143,10 +131,31 @@ EXPR:
 	bz %_EXPR_IF
 
 	ld s0, x5
+	ld s1, %cmd_print
+	call %strcmp
+	cmp #1
+	bz %_EXPR_PRINT
+
+	ld s0, x5
 	ld s1, %cmd_assign
 	call %strcmp
 	cmp #1
 	bz %_EXPR_ASSIGN
+
+	ld s0, x5
+	jmp %FETCH_VALUE
+	ret
+
+_EXPR_PRINT:
+	ld s0, x5
+EXPR_PRINT:
+	advn s0, #6
+	call %EXPR
+	pusha
+	call %print_hex
+	popa
+	ld s0, %newl
+	call %PRINT
 	ret
 
 	;; ASSIGN A ADD 0001 0001
@@ -155,9 +164,8 @@ proc_assign:
 _EXPR_ASSIGN:
 	ld s0, x5
 EXPR_ASSIGN:
-	xc a, s0
-	add #7
-	xc a, s0
+	advn s0, #7
+
 	; get name
 	peek a, s0
 	and #255

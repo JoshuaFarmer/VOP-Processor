@@ -182,7 +182,7 @@ opcodes = {
 	"END":0xF1,
 }
 
-def decode(_op, labels, worry=True):
+def decode(_op, labels, worry, lineNum):
 	idx = []
 	tmp = _op.split("\\")
 	
@@ -240,23 +240,24 @@ def decode(_op, labels, worry=True):
 				retstr += str(op[i])
 				break
 			elif str(op[i])[0] == f"-":
-				res = decode("TEMP:\\" + str(op[i])[1:], labels, worry)
+				res = decode("TEMP:\\" + str(op[i])[1:], labels, worry, lineNum)
 				retstr += "-" + res[0].split(":")[1]
 				idx.append(res[1][0])
 				break
 			elif str(op[i])[0] == f"+":
-				res = decode("TEMP:\\" + str(op[i])[1:], labels, worry)
+				res = decode("TEMP:\\" + str(op[i])[1:], labels, worry, lineNum)
 				idx.append(res[1][0])
 				retstr += "+" + res[0].split(":")[1]
 				break
 			elif str(op[i])[0] == f"%":
 				if str(op[i])[1:] in labels:
 					retstr += "#"+str(labels[str(op[i])[1:]])
-				elif worry == True:
-					pass
+				elif worry == False:
+					retstr += "#0"
+					break
 				else:
-					# cause bounds error
-					a = str(labels[str(op[i])[1:]])
+					print("Error, Label not found: ", _op, "at", lineNum)
+					exit(1)
 				break
 			elif str(op[i])[0] == f"$":
 				__op = op[i][1:]
@@ -280,16 +281,16 @@ def decode(_op, labels, worry=True):
 
 	return retstr, idx
 
-def get_opcode(text, labels, worry=True):
+def get_opcode(text, labels, worry, lineNum):
 	_op = ["\\".join(text.split(" ", 1))][0].strip()
 	_op = _op.upper()
 	op = _op
 
-	op, idx = decode(op, labels, worry)
+	op, idx = decode(op, labels, worry, lineNum)
 	bytearr = []
 	
 	if '.' in op and '#' not in op:
-		_idx = decode("TEMP:\\" + op.split(".")[1], labels, worry)
+		_idx = decode("TEMP:\\" + op.split(".")[1], labels, worry, lineNum)
 		op = op.split(".")[0] + "." + _idx[0].split("TEMP:")[1]
 		idx.append(_idx[1][0])
 	if '#' in op:
@@ -324,7 +325,6 @@ def get_opcode(text, labels, worry=True):
 	sz = len(bytearr)
 	return sz, bytearr
 
-# Modified first_pass function to handle "include" directive
 def first_pass(lines):
 	labels = {}
 	byteOff = 0
@@ -335,17 +335,18 @@ def first_pass(lines):
 
 		if l:
 			# Handle the "include" directive
-			if l.startswith("include"):
-				# Get the file path from the include directive
-				parts = l.split(" ")
-				if len(parts) > 1:
-					include_file = parts[1].strip().strip("\"")
+			if l.split(" ")[0] == "include":
+				parts = l.split(" ")[1:]
+				if len(parts) != 0:
+					include_file = parts[0].strip().strip("\"")
+					print("Including: ", include_file)
 					try:
 						# Read the content of the included file
 						with open(include_file, "r") as include_f:
 							included_text = include_f.read()
 							for x in included_text.split("\n"):
 								lines.append(x)
+							lines = res_macros(lines)
 					except FileNotFoundError:
 						print(f"Error: Included file '{include_file}' not found.")
 						exit(1)
@@ -366,13 +367,14 @@ def first_pass(lines):
 				for c in l.split("\"")[1]:
 					byteOff += 1
 			else:
-				byteOff += len(get_opcode(l, labels, False)[1])
+				byteOff += len(get_opcode(l, labels, False, i)[1])
 		i += 1  # Move to the next line
 	return labels, lines
 
 def second_pass(text, labels):
 	byteOff = 0
 	arr = []
+	line_num = 1
 	for l in text:
 		if l:
 			l = l.strip()
@@ -397,10 +399,11 @@ def second_pass(text, labels):
 					byteOff += 1
 				continue
 			else:
-				data = get_opcode(l, labels)
+				data = get_opcode(l, labels, True, line_num)
 				byteOff += data[0]
 				for x in data[1]:
 					arr.append(x)
+		line_num += 1
 	return arr
 
 def res_macros(text):

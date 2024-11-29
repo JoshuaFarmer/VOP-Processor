@@ -6,6 +6,47 @@
 	define line_len 32
 	define max_line 100
 
+	macro advn x n
+		xc a, $x
+		add $n
+		xc a, $x
+	end
+
+	macro pusha
+		push a, s3
+		push w0, s3
+		push w1, s3
+		push w2, s3
+		push w3, s3
+		push w4, s3
+		push w5, s3
+		push w6, s3
+		push w7, s3
+	end
+
+	macro popa
+		push w7, s3
+		push w6, s3
+		push w5, s3
+		push w4, s3
+		push w3, s3
+		push w2, s3
+		push w1, s3
+		push w0, s3
+		push a, s3
+	end
+
+	macro outx port
+		ld w7, a
+		ld a, s0
+		push a, s3
+		ld s0, $port
+		ld a, w7
+		out
+		pop a, s3
+		ld s0, a
+	end
+
 	; FIRST PROGRAM TO USE NEW STACK POINTERS!! (s4 to z7)
 	; yes, this cpu has 16 stack pointers/address registers...
 _start:
@@ -99,16 +140,20 @@ CMD:
 	cmp #1
 	bz %proc_run
 
-	; line num
 	ld s0, %keyboard
-	call %string_to_hex
-	ld s0, %keyboard
-	xc a, s0
-	add #5
-	xc a, s0
-	call %copy_to_line
+	peek a, s0
+	and #255
+	cmp #36
+	bz %proc_expr
 	ret
 
+proc_expr:
+	ld s0, %keyboard
+	inc s0
+	call %string_to_hex
+	inc s0
+	call %copy_to_line
+	ret
 	; CMDS
 proc_run:
 	ld s1, #2
