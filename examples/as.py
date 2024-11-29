@@ -353,20 +353,20 @@ def first_pass(lines):
 					print("Error: 'include' directive missing file path.")
 					exit(1)
 			elif l[0] == ';' or l[0] == '!':
-					pass  # Ignore comments
+				pass  # Ignore comments
 			elif l[-1] == ':':
-					labels[l[0:-1].upper()] = byteOff
+				labels[l[0:-1].upper()] = byteOff
 			elif l.split(" ")[0] == "org":
-					byteOff = int(l.split(" ")[1])
+				byteOff = int(l.split(" ")[1])
 			elif l.split(" ")[0] == "db":
-					byteOff += 1
+				byteOff += 1
 			elif l.split(" ")[0] == "define":
-					labels[l.split(" ")[1].upper()] = int(l.split(" ")[2])
+				labels[l.split(" ")[1].upper()] = int(l.split(" ")[2])
 			elif l.split("\"")[0].strip() == "ds":
-					for c in l.split("\"")[1]:
-						byteOff += 1
+				for c in l.split("\"")[1]:
+					byteOff += 1
 			else:
-					byteOff += len(get_opcode(l, labels, False)[1])
+				byteOff += len(get_opcode(l, labels, False)[1])
 		i += 1  # Move to the next line
 	return labels, lines
 
@@ -421,7 +421,7 @@ def res_macros(text):
 			in_macro = False
 			macr = []
 			macr_name = ""
-		else:
+		elif line:
 			if in_macro:
 				macr.append(line)
 			else:
@@ -458,7 +458,6 @@ for i in range(len(argv)):
 
 			text = text.split("\n")
 			text = res_macros(text)
-			print(text)
 			labels, text = first_pass(text)
 			out = second_pass(text, labels)
 			writeFile.write(bytearray(out))
