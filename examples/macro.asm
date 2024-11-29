@@ -1,3 +1,5 @@
+; theoretically you can use macros to retarget the assembler (lmao)
+
 ; MACRO NAME <ARGS>
 macro jne x y addr
 	ld a, $x
