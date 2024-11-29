@@ -143,7 +143,22 @@ EXPR:
 	bz %_EXPR_ASSIGN
 
 	ld s0, x5
+	ld s1, %cmd_input
+	call %strcmp
+	cmp #1
+	bz %_EXPR_INPUT
+
+	ld s0, x5
 	jmp %FETCH_VALUE
+	ret
+
+_EXPR_INPUT:
+	ld s0, x5
+EXPR_INPUT:
+	ld z0, %keyboard
+	call %GETS
+	ld s0, %keyboard
+	call %string_to_hex
 	ret
 
 _EXPR_PRINT:

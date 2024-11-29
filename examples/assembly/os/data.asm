@@ -69,6 +69,9 @@ cmd_if:
 cmd_print:
 	ds "print"
 	db 0
+cmd_input:
+	ds "input"
+	db 0
 cmd_assign:
 	ds "assign"
 	db 0
