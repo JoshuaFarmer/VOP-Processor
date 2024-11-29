@@ -182,7 +182,7 @@ opcodes = {
 	"END":0xF1,
 }
 
-def decode(_op, labels):
+def decode(_op, labels, worry=True):
 	idx = []
 	tmp = _op.split("\\")
 	
@@ -240,21 +240,23 @@ def decode(_op, labels):
 				retstr += str(op[i])
 				break
 			elif str(op[i])[0] == f"-":
-				res = decode("TEMP:\\" + str(op[i])[1:], labels)
+				res = decode("TEMP:\\" + str(op[i])[1:], labels, worry)
 				retstr += "-" + res[0].split(":")[1]
 				idx.append(res[1][0])
 				break
 			elif str(op[i])[0] == f"+":
-				res = decode("TEMP:\\" + str(op[i])[1:], labels)
+				res = decode("TEMP:\\" + str(op[i])[1:], labels, worry)
 				idx.append(res[1][0])
 				retstr += "+" + res[0].split(":")[1]
 				break
 			elif str(op[i])[0] == f"%":
-				# if not found, assume in first pass
 				if str(op[i])[1:] in labels:
 					retstr += "#"+str(labels[str(op[i])[1:]])
+				elif worry == True:
+					pass
 				else:
-					retstr += "#0"
+					# cause bounds error
+					a = str(labels[str(op[i])[1:]])
 				break
 			elif str(op[i])[0] == f"$":
 				__op = op[i][1:]
@@ -278,16 +280,16 @@ def decode(_op, labels):
 
 	return retstr, idx
 
-def get_opcode(text, labels):
+def get_opcode(text, labels, worry=True):
 	_op = ["\\".join(text.split(" ", 1))][0].strip()
 	_op = _op.upper()
 	op = _op
 
-	op, idx = decode(op, labels)
+	op, idx = decode(op, labels, worry)
 	bytearr = []
 	
 	if '.' in op and '#' not in op:
-		_idx = decode("TEMP:\\" + op.split(".")[1], labels)
+		_idx = decode("TEMP:\\" + op.split(".")[1], labels, worry)
 		op = op.split(".")[0] + "." + _idx[0].split("TEMP:")[1]
 		idx.append(_idx[1][0])
 	if '#' in op:
@@ -296,11 +298,9 @@ def get_opcode(text, labels):
 		if ',' in op and len(op.split("#")[1].split(",")) > 1:
 			opcode = op.split("#")[0] + '#,' + op.split("#")[1].split(",")[1]
 			operands = [op.split("#")[1].split(",")[0]]
-		#	print(opcode, operands)
 		else:
 			opcode = op.split("#")[0] + '#'
 			operands = [op.split("#")[1]]
-		#	print(opcode, operands)
 
 		bytearr.append(opcodes[opcode])
 		for x in idx:
@@ -366,7 +366,7 @@ def first_pass(lines):
 					for c in l.split("\"")[1]:
 						byteOff += 1
 			else:
-					byteOff += len(get_opcode(l, labels)[1])
+					byteOff += len(get_opcode(l, labels, False)[1])
 		i += 1  # Move to the next line
 	return labels, lines
 
@@ -425,7 +425,7 @@ def res_macros(text):
 			if in_macro:
 				macr.append(line)
 			else:
-				if line.split(":")[0] in macros:
+				if line.split(":")[0].strip() in macros:
 					macro = macros[line.split(":")[0].strip()]
 
 					# arguments
@@ -460,7 +460,6 @@ for i in range(len(argv)):
 			text = res_macros(text)
 			labels, text = first_pass(text)
 			out = second_pass(text, labels)
-
 			writeFile.write(bytearray(out))
 			writeFile.close()
 			i += 2
