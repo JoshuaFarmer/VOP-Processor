@@ -1,4 +1,5 @@
 	; simple Math library
+	; res is a
 mul:
 	xor w2, w2
 	ld w3, #1

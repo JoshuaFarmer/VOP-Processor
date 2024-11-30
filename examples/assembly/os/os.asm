@@ -54,10 +54,6 @@
 	; FIRST PROGRAM TO USE NEW STACK POINTERS!! (s4 to z7)
 	; yes, this cpu has 16 stack pointers/address registers...
 _start:
-	format .#0
-	ld s3, %stack
-	push .#0, s3
-	pop p1, s3
 	ld s1, #2
 	ld s0, %cat
 	call %PRINT
@@ -330,6 +326,11 @@ set_var_end:
 ; 	ret
 
 __inf__:
+	jmp %__inf__
+shutdown:
+	ld a, #1
+	ld s0, #0
+	out
 	jmp %__inf__
 
 	include "io.asm"

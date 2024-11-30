@@ -6,7 +6,9 @@ _PRINT:
 	cmp #0
 	retz
 	inc w0
-	outx #2
+	xc s0, s1
+	out
+	xc s0, s1
 	jmp %_PRINT
 
 	; print a
@@ -23,8 +25,7 @@ get_from_port:
 	ret
 
 GETS:
-	ld s0, #3
-	call %get_from_port
+	call %GETKEY
 	ld w0, a
 
 	cmp #13

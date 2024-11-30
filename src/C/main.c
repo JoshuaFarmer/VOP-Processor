@@ -162,10 +162,8 @@ int main(int argc, char* argv[]) {
 			buffbank = !buffbank;
 			IO[SWAP_BUFFERS] = 0;
 		} if (IO[TERMINAL]) {
-			if (IO[TERMINAL] != '\r') {
-				printf("%c", (char)IO[TERMINAL]);
-				fflush(stdout);
-			}
+			printf("%c", (char)IO[TERMINAL]);
+			fflush(stdout);
 			IO[TERMINAL] = 0;
 		}
 	}

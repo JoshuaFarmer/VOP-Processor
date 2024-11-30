@@ -1,23 +1,10 @@
 	; all data
-true:
-	ds "true"
-	db 10
-	db 13
-	db 0
-false:
-	ds "false"
-	db 10
-	db 13
-	db 0
 cat:
 	ds " /\_/\"
-	db 13
 	db 10
 	ds "( o.o )"
-	db 13
 	db 10
  	ds " > ^ <"
-	db 13
 	db 10
 	db 0
 prompt:
@@ -27,7 +14,6 @@ prompt2:
 	ds ": "
 	db 0
 newl:
-	db 13
 	db 10
 	db 0
 cmd_run:
@@ -78,10 +64,8 @@ cmd_assign:
 list_msg:
 	ds "Listing Program.."
 	db 10
-	db 13
 	db 0
 run_msg:
 	ds "Running Program.."
 	db 10
-	db 13
 	db 0
