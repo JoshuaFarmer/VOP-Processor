@@ -6,6 +6,10 @@
 	define line_len 32
 	define max_line 100
 
+	; for registers that you
+	; cant use "ADD",
+	; (address registers)
+	; e.g. advn S0, #32
 	macro advn x n
 		xc a, $x
 		add $n
