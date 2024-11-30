@@ -11,11 +11,6 @@ _PRINT:
 	xc s0, s1
 	jmp %_PRINT
 
-	; print a
-PUTC:
-	outx #2
-	ret
-
 GETKEY:
 	ld s0, #3
 get_from_port:

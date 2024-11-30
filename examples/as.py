@@ -257,6 +257,9 @@ def decode(_op, labels, worry, lineNum):
 					break
 				else:
 					print("Error, Label not found: ", _op, "at", lineNum)
+					print("Labels:")
+					for lab in labels:
+						print(lab)
 					exit(1)
 				break
 			elif str(op[i])[0] == f"$":
@@ -336,23 +339,7 @@ def first_pass(lines):
 		if l:
 			# Handle the "include" directive
 			if l.split(" ")[0] == "include":
-				parts = l.split(" ")[1:]
-				if len(parts) != 0:
-					include_file = parts[0].strip().strip("\"")
-					print("Including: ", include_file)
-					try:
-						# Read the content of the included file
-						with open(include_file, "r") as include_f:
-							included_text = include_f.read()
-							for x in included_text.split("\n"):
-								lines.append(x)
-							lines = res_macros(lines)
-					except FileNotFoundError:
-						print(f"Error: Included file '{include_file}' not found.")
-						exit(1)
-				else:
-					print("Error: 'include' directive missing file path.")
-					exit(1)
+				pass
 			elif l[0] == ';' or l[0] == '!':
 				pass  # Ignore comments
 			elif l[-1] == ':':
@@ -424,6 +411,26 @@ def res_macros(text):
 			in_macro = False
 			macr = []
 			macr_name = ""
+		elif line and line.split(" ")[0] == "include":
+			parts = line.split(" ")[1:]
+			if len(parts) != 0:
+				include_file = parts[0].strip().strip("\"")
+				print("Including: ", include_file)
+				try:
+					# Read the content of the included file
+					with open(include_file, "r") as include_f:
+						included_text = include_f.read()
+						_text = []
+						for x in included_text.split("\n"):
+							_text.append(x)
+						for i in res_macros(_text):
+							ret.append(i)
+				except FileNotFoundError:
+					print(f"Error: Included file '{include_file}' not found.")
+					exit(1)
+			else:
+				print("Error: 'include' directive missing file path.")
+				exit(1)
 		elif line:
 			if in_macro:
 				macr.append(line)

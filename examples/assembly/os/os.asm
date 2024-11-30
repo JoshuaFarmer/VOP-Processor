@@ -29,26 +29,23 @@
 	end
 
 	macro popa
-		push w7, s3
-		push w6, s3
-		push w5, s3
-		push w4, s3
-		push w3, s3
-		push w2, s3
-		push w1, s3
-		push w0, s3
-		push a, s3
+		pop w7, s3
+		pop w6, s3
+		pop w5, s3
+		pop w4, s3
+		pop w3, s3
+		pop w2, s3
+		pop w1, s3
+		pop w0, s3
+		pop a, s3
 	end
 
-	macro outx port
-		ld w7, a
-		ld a, s0
-		push a, s3
+	macro outx port value
+		ld z7, s0
 		ld s0, $port
-		ld a, w7
+		ld a, $value
 		out
-		pop a, s3
-		ld s0, a
+		ld s0, z7
 	end
 
 	; FIRST PROGRAM TO USE NEW STACK POINTERS!! (s4 to z7)
@@ -112,10 +109,6 @@ CMD:
 
 	ld s0, %keyboard
 	call %EXPR
-	call %print_hex
-	ld s1, #2
-	ld s0, %newl
-	call %PRINT
 	ret
 
 proc_expr:
@@ -141,14 +134,17 @@ proc_run_w0:
 	peek a, s0
 	cmp #0
 	bnz %run_line
-run_after:
+run_after_1:
 	inc x1
+run_after_2:
 	cmp x1, x2
 	bnz %proc_run_w0
 	ret
 run_line:
 	call %EXPR
-	jmp %run_after
+	cmp w7, #1
+	bz %run_after_2
+	jmp %run_after_1
 
 proc_list:
 	ld s1, #2
@@ -334,6 +330,7 @@ shutdown:
 	jmp %__inf__
 
 	include "io.asm"
+	include "video.asm"
 	include "hex.asm"
 	include "expr.asm"
 	include "math.asm"

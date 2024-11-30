@@ -77,6 +77,7 @@ EXPR_JUMP:
 	advn s0, #5
 	call %FETCH_VALUE
 	ld x1, a
+	ld w7, #1
 	ret
 
 _EXPR_IF:
@@ -86,13 +87,13 @@ EXPR_IF:
 	; evaluate expression
 	call %EXPR
 	ld w7, a
-	; if zero
 	cmp #0
 	bnz %EXPR
 	ret
 
 EXPR:
 	ld x5, s0
+	ld w7, #0
 
 	ld s0, x5
 	ld s1, %cmd_add
@@ -159,6 +160,11 @@ EXPR_INPUT:
 	call %GETS
 	ld s0, %keyboard
 	call %string_to_hex
+	push a, s3
+	ld s0, %newl
+	ld s1, #2
+	call %PRINT
+	pop a, s3
 	ret
 
 _EXPR_PRINT:
@@ -170,6 +176,7 @@ EXPR_PRINT:
 	call %print_hex
 	popa
 	ld s0, %newl
+	ld s1, #2
 	call %PRINT
 	ret
 

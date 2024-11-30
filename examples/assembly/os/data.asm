@@ -1,6 +1,6 @@
 	; all data
 cat:
-	ds " /\_/\"
+	ds " /\_/\ "
 	db 10
 	ds "( o.o )"
 	db 10
@@ -15,6 +15,7 @@ prompt2:
 	db 0
 newl:
 	db 10
+	db 13
 	db 0
 cmd_run:
 	ds "run"
