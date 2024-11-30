@@ -62,6 +62,9 @@ cmd_input:
 cmd_assign:
 	ds "assign"
 	db 0
+cmd_not:
+	ds "not"
+	db 0
 list_msg:
 	ds "Listing Program.."
 	db 10

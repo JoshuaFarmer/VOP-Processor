@@ -114,6 +114,12 @@ EXPR:
 	bz %_EXPR_MUL
 
 	ld s0, x5
+	ld s1, %cmd_not
+	call %strcmp
+	cmp #1
+	bz %_EXPR_NOT
+
+	ld s0, x5
 	ld s1, %cmd_is
 	call %strcmp
 	cmp #1
@@ -151,6 +157,14 @@ EXPR:
 
 	ld s0, x5
 	jmp %FETCH_VALUE
+	ret
+
+_EXPR_NOT:
+	ld s0, x5
+EXPR_NOT:
+	advn s0, #4
+	call %EXPR
+	not
 	ret
 
 _EXPR_INPUT:
