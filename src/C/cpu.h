@@ -218,7 +218,7 @@ enum InstructionOpcode {
 uint16_t Tmp=0x0000;
 uint16_t Res=0x0000;
 uint16_t Acc=0x0000;
-uint16_t Rn[16]={0x0000};
+uint16_t Rn[16];
 uint16_t Sn[16]={0x5000, 0x6000, 0x7000, 0x8000};
 uint16_t PC=0x0000;
 uint8_t  P0=0x0000, P1=0x0000;
@@ -254,7 +254,6 @@ void store(uint16_t offset, uint8_t segment, uint8_t value) {
 }
 
 void poke(uint16_t value, uint16_t addr, uint8_t P) {
-	printf("POKING: %.4x TO %.4x\n", addr, value);
 	if (data_format == false) {
 		store(addr, P, value);
 		store(addr+1, P, value  >> 8);
@@ -271,7 +270,6 @@ uint16_t peek(uint16_t addr, uint8_t P) {
 	} else {
 		value |= fetch(addr, P);
 	}
-
 	return value;
 }
 
@@ -290,11 +288,11 @@ uint16_t pop() {
 	int value = 0;
 	if (data_format == false) {
 		Sn[n] += 2;
-		value = peek(Sn[n], P1);
+		value |= fetch(Sn[n], P1) << 8;
+		value |= fetch(Sn[n]+1, P1);
 	} else {
 		value |= fetch(Sn[n]++, P1);
 	}
-
 	return value;
 }
 

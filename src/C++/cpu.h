@@ -271,16 +271,15 @@ class VOP {
 		int value = 0;
 		if (data_format == false) {
 			Sn[n] += 2;
-			value = peek(Sn[n], P1);
+			value |= fetch(Sn[n], P1) << 8;
+			value |= fetch(Sn[n]+1, P1);
 		} else {
 			value |= fetch(Sn[n]++, P1);
 		}
-
 		return value;
 	}
 
 	void poke(uint16_t value, uint16_t addr) {
-		printf("POKING: %.4x TO %.4x\n", addr, value);
 		if (data_format == false) {
 			write(addr, P1, value);
 			write(addr+1, P1, value  >> 8);
