@@ -38,6 +38,18 @@ cmd_deref:
 cmd_is:
 	ds "is"
 	db 0
+cmd_or:
+	ds "or"
+	db 0
+cmd_and:
+	ds "and"
+	db 0
+cmd_xor:
+	ds "xor"
+	db 0
+cmd_sub:
+	ds "sub"
+	db 0
 cmd_add:
 	ds "add"
 	db 0

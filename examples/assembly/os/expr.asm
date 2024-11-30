@@ -43,6 +43,33 @@ EXPR_TWO_ARGS:
 	ld x3, a
 	ret
 
+_EXPR_AND:
+	ld s0, x5
+EXPR_AND:
+	advn s0, #4
+	call %EXPR_TWO_ARGS
+	ld a, w7
+	and x3
+	ret
+
+_EXPR_OR:
+	ld s0, x5
+EXPR_OR:
+	advn s0, #3
+	call %EXPR_TWO_ARGS
+	ld a, w7
+	or x3
+	ret
+
+_EXPR_XOR:
+	ld s0, x5
+EXPR_XOR:
+	advn s0, #4
+	call %EXPR_TWO_ARGS
+	ld a, w7
+	xor x3
+	ret
+
 _EXPR_ADD:
 	ld s0, x5
 EXPR_ADD:
@@ -112,6 +139,24 @@ EXPR:
 	call %strcmp
 	cmp #1
 	bz %_EXPR_MUL
+
+	ld s0, x5
+	ld s1, %cmd_and
+	call %strcmp
+	cmp #1
+	bz %_EXPR_AND
+
+	ld s0, x5
+	ld s1, %cmd_or
+	call %strcmp
+	cmp #1
+	bz %_EXPR_OR
+
+	ld s0, x5
+	ld s1, %cmd_xor
+	call %strcmp
+	cmp #1
+	bz %_EXPR_XOR
 
 	ld s0, x5
 	ld s1, %cmd_not
@@ -194,7 +239,7 @@ EXPR_PRINT:
 	call %PRINT
 	ret
 
-	;; ASSIGN A ADD 0001 0001
+	;; ASSIGN A ADD 1 1
 proc_assign:
 	ld x5, %keyboard
 _EXPR_ASSIGN:
