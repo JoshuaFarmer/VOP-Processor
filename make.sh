@@ -1,1 +1,2 @@
-g++ "src/main.cpp" -o "bin/vop" -Wall -Wextra -Werror -Wpedantic -lSDL2 -O3
+g++ "src/C++/main.cpp" -o "bin/C++/vop" -Wall -Wextra -Werror -Wpedantic -lSDL2 -O3
+gcc "src/C/main.c" -o "bin/C/vop" -Wall -Wextra -Werror -Wpedantic -lSDL2 -O3 -std=c99

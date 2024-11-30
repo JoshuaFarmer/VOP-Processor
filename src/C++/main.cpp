@@ -2,10 +2,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "cpu.h"
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
+#include "cpu.h"
 
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
