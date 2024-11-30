@@ -258,7 +258,6 @@ class VOP {
 
 	void push(uint16_t value) {
 		int n = fetch(PC++, P0) & 0xF;
-		if (n > 2) n = 2;
 		if (data_format == false) {
 			poke(value, Sn[n], P1);
 			Sn[n] -= 2;
@@ -269,7 +268,6 @@ class VOP {
 
 	uint16_t pop() {
 		int n = fetch(PC++, P0) & 0xF;
-		if (n > 2) n = 2;
 		int value = 0;
 		if (data_format == false) {
 			Sn[n] += 2;
@@ -282,6 +280,7 @@ class VOP {
 	}
 
 	void poke(uint16_t value, uint16_t addr) {
+		printf("POKING: %.4x TO %.4x\n", addr, value);
 		if (data_format == false) {
 			write(addr, P1, value);
 			write(addr+1, P1, value  >> 8);

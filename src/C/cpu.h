@@ -11,7 +11,7 @@
 #define SCREEN_SCALE 2
 
 unsigned char  ram[MAX_RAM];
-unsigned char* video_ram = ram+65536; // Page 0x1
+unsigned char* video_ram = &ram[65536]; // Page 0x1
 
 typedef enum {
 	POWER_OFF_IO,
@@ -254,6 +254,7 @@ void store(uint16_t offset, uint8_t segment, uint8_t value) {
 }
 
 void poke(uint16_t value, uint16_t addr, uint8_t P) {
+	printf("POKING: %.4x TO %.4x\n", addr, value);
 	if (data_format == false) {
 		store(addr, P, value);
 		store(addr+1, P, value  >> 8);
@@ -276,7 +277,6 @@ uint16_t peek(uint16_t addr, uint8_t P) {
 
 void push(uint16_t value) {
 	int n = fetch(PC++, P0) & 0xF;
-	if (n > 2) n = 2;
 	if (data_format == false) {
 		poke(value, Sn[n], P1);
 		Sn[n] -= 2;
@@ -287,7 +287,6 @@ void push(uint16_t value) {
 
 uint16_t pop() {
 	int n = fetch(PC++, P0) & 0xF;
-	if (n > 2) n = 2;
 	int value = 0;
 	if (data_format == false) {
 		Sn[n] += 2;

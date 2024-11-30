@@ -85,7 +85,6 @@ int main(int argc, char* argv[]) {
 	enable_raw_mode();
 	set_nonblocking_mode();
 
-	int counter = 128;
 	bool upper = false;
 	while (quit == false && IO[POWER_OFF_IO] == 0x00) {
 		while (SDL_PollEvent(&event) != 0) {
@@ -150,12 +149,9 @@ int main(int argc, char* argv[]) {
 		
 		executeNext();
 		
-		if (--counter == 0) {
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-			SDL_RenderClear(renderer);	
-			draw_buffer();
-			counter = 128;
-		}
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);	
+		draw_buffer();
 
 		if (IO[SWAP_BUFFERS] == 0x01) {
 			buffbank = !buffbank;
