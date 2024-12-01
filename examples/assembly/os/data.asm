@@ -68,6 +68,9 @@ cmd_if:
 cmd_print:
 	ds "print"
 	db 0
+cmd_put:
+	ds "put"
+	db 0
 cmd_input:
 	ds "input"
 	db 0

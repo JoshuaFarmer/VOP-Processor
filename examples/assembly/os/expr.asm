@@ -195,6 +195,12 @@ EXPR:
 	bz %_EXPR_ASSIGN
 
 	ld s0, x5
+	ld s1, %cmd_put
+	call %strcmp
+	cmp #1
+	bz %_EXPR_PUT
+
+	ld s0, x5
 	ld s1, %cmd_input
 	call %strcmp
 	cmp #1
@@ -224,6 +230,15 @@ EXPR_INPUT:
 	ld s1, #2
 	call %PRINT
 	pop a, s3
+	ret
+
+_EXPR_PUT:
+	ld s0, x5
+EXPR_PUT:
+	advn s0, #4
+	call %EXPR
+	ld s1, #2
+	call %PUTC
 	ret
 
 _EXPR_PRINT:
