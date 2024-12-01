@@ -58,3 +58,17 @@ print the expression as a char.
 
 please note that EVERY number is in hex,
 decimal is soon to be implemented
+
+# COMING SOON:
+arrays so i can make strings
+merging put&print by keeping track
+of types.
+poking/peeking in ram.
+less/greater than
+arrays will probably be like:
+$N assign $V array 1 2 3 4 5 6 7 8 9
+$N print getn $V 2
+it would work by overhauling the var system
+instead of the ptr containing the value,
+the value would point to the data,
+which is prefixed with the type and length.
