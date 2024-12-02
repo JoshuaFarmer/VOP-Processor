@@ -1,8 +1,8 @@
 	org 1024
 	define stack 65535
 	define call_stack 61440
-	define variables 4096
-	define keyboard 8192
+	define variables 16000
+	define keyboard 16100
 	define lines 16384
 	define line_len 32
 	define max_line 512
@@ -112,20 +112,20 @@ _inf:
 	jmp %_inf
 
 CMD:
-	ld s0, %keyboard
-	ld s1, %cmd_echo
+	ld s1, %keyboard
+	ld s0, %cmd_echo
 	call %strcmp
 	cmp #1
 	bz %proc_echo
 
-	ld s0, %keyboard
-	ld s1, %cmd_get
+	ld s1, %keyboard
+	ld s0, %cmd_get
 	call %strcmp
 	cmp #1
 	bz %proc_get
 
-	ld s0, %keyboard
-	ld s1, %cmd_set
+	ld s1, %keyboard
+	ld s0, %cmd_set
 	call %strcmp
 	cmp #1
 	bz %proc_set
@@ -136,22 +136,23 @@ CMD:
 	;cmp #1
 	;bz %proc_deref
 
-	ld s0, %keyboard
-	ld s1, %cmd_list
+	ld s1, %keyboard
+	ld s0, %cmd_list
 	call %strcmp
 	cmp #1
 	bz %proc_list
 
-	ld s0, %keyboard
-	ld s1, %cmd_run
+	ld s1, %keyboard
+	ld s0, %cmd_run
 	call %strcmp
 	cmp #1
 	bz %proc_run
 
-	ld s0, %keyboard
-	peek a, s0
+	ld s1, %keyboard
+	peek a, s1
 	and #255
 	cmp #36
+	ld s0, %keyboard
 	bz %proc_expr
 
 	ld s0, %keyboard

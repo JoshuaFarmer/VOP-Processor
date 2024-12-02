@@ -1,7 +1,7 @@
 ; add two given values (forever unless A is 0)
 $0 assign A input
 $1 assign B input
-$2 if is $A 0 jump 10
+$2 if is $A 0 jump 9
 $3 assign S add $A $B
 $4 print $S
 $5 jump 0

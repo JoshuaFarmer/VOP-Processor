@@ -223,92 +223,92 @@ EXPR:
 	ld x5, s0
 	ld w7, #0
 
-	ld s0, x5
-	ld s1, %cmd_add
+	ld s1, x5
+	ld s0, %cmd_add
 	call %strcmp
 	cmp #1
 	bz %_EXPR_ADD
 
-	ld s0, x5
-	ld s1, %cmd_sub
+	ld s1, x5
+	ld s0, %cmd_sub
 	call %strcmp
 	cmp #1
 	bz %_EXPR_SUB
 
-	ld s0, x5
-	ld s1, %cmd_mul
+	ld s1, x5
+	ld s0, %cmd_mul
 	call %strcmp
 	cmp #1
 	bz %_EXPR_MUL
 
-	ld s0, x5
-	ld s1, %cmd_and
+	ld s1, x5
+	ld s0, %cmd_and
 	call %strcmp
 	cmp #1
 	bz %_EXPR_AND
 
-	ld s0, x5
-	ld s1, %cmd_or
+	ld s1, x5
+	ld s0, %cmd_or
 	call %strcmp
 	cmp #1
 	bz %_EXPR_OR
 
-	ld s0, x5
-	ld s1, %cmd_xor
+	ld s1, x5
+	ld s0, %cmd_xor
 	call %strcmp
 	cmp #1
 	bz %_EXPR_XOR
 
-	ld s0, x5
-	ld s1, %cmd_not
+	ld s1, x5
+	ld s0, %cmd_not
 	call %strcmp
 	cmp #1
 	bz %_EXPR_NOT
 
-	ld s0, x5
-	ld s1, %cmd_is
+	ld s1, x5
+	ld s0, %cmd_is
 	call %strcmp
 	cmp #1
 	bz %_EXPR_IS
 
-	ld s0, x5
-	ld s1, %cmd_jump
+	ld s1, x5
+	ld s0, %cmd_jump
 	call %strcmp
 	cmp #1
 	bz %_EXPR_JUMP
 
-	ld s0, x5
-	ld s1, %cmd_if
+	ld s1, x5
+	ld s0, %cmd_if
 	call %strcmp
 	cmp #1
 	bz %_EXPR_IF
 
-	ld s0, x5
-	ld s1, %cmd_print
+	ld s1, x5
+	ld s0, %cmd_print
 	call %strcmp
 	cmp #1
 	bz %_EXPR_PRINT
 
-	ld s0, x5
-	ld s1, %cmd_assign
+	ld s1, x5
+	ld s0, %cmd_assign
 	call %strcmp
 	cmp #1
 	bz %_EXPR_ASSIGN
 
-	ld s0, x5
-	ld s1, %cmd_put
+	ld s1, x5
+	ld s0, %cmd_put
 	call %strcmp
 	cmp #1
 	bz %_EXPR_PUT
 
-	ld s0, x5
-	ld s1, %cmd_input
+	ld s1, x5
+	ld s0, %cmd_input
 	call %strcmp
 	cmp #1
 	bz %EXPR_INPUT
 
-	ld s0, x5
-	ld s1, %cmd_exit
+	ld s1, x5
+	ld s0, %cmd_exit
 	call %strcmp
 	cmp #1
 	bz %_EXPR_EXIT
