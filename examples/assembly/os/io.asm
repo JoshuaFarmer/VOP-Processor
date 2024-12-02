@@ -29,6 +29,9 @@ get_from_port:
 	ret
 
 GETS:
+	ld w1, %line_len
+	dec w1
+_GETS:
 	call %GETKEY
 	ld w0, a
 
@@ -43,7 +46,8 @@ GETS:
 
 	out
 	inc z0
-	jmp %GETS
+	dec w1
+	bnz %_GETS
 
 GETS_END:
 	ld s0, %newl

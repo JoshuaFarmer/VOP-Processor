@@ -80,6 +80,9 @@ cmd_assign:
 cmd_not:
 	ds "not"
 	db 0
+cmd_exit:
+	ds "exit"
+	db 0
 list_msg:
 	ds "Listing Program.."
 	db 10

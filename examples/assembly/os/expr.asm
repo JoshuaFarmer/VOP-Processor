@@ -184,6 +184,13 @@ EXPR_ASSIGN:
 	call %SetVariable
 	ret
 
+_EXPR_EXIT:
+	ld s0, x5
+EXPR_EXIT:
+	ld x1, %max_line
+	dec x1
+	ret
+
 	; a == line_num
 get_line:
 	ld w0, a
@@ -298,6 +305,12 @@ EXPR:
 	call %strcmp
 	cmp #1
 	bz %_EXPR_INPUT
+
+	ld s0, x5
+	ld s1, %cmd_exit
+	call %strcmp
+	cmp #1
+	bz %_EXPR_EXIT
 
 	ld s0, x5
 	jmp %FETCH_VALUE
