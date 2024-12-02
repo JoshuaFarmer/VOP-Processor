@@ -18,6 +18,7 @@ typedef enum {
 	SWAP_BUFFERS,
 	TERMINAL,
 	TERMINAL_I,
+	TERMINAL_I_R,
 } IO_PORT;
 
 enum InstructionOpcode {

@@ -18,6 +18,9 @@ PUTC:
 	ret
 
 GETKEY:
+	ld s0, #4
+	ld a, #1
+	out
 	ld s0, #3
 get_from_port:
 	in

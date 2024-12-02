@@ -12,6 +12,7 @@ enum {
 	SWAP_BUFFERS,
 	TERMINAL,
 	TERMINAL_I,
+	TERMINAL_I_R, // ready for input
 };
 
 class VOP {

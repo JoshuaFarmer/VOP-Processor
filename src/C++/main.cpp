@@ -114,6 +114,31 @@ void set_blocking_mode() {
 	fcntl(STDIN_FILENO, F_SETFL, flags & ~O_NONBLOCK); // Clear non-blocking flag
 }
 
+int kbhit(void) {
+	struct termios oldt, newt;
+	int ch;
+	int oldf;
+
+	tcgetattr(STDIN_FILENO, &oldt);
+	newt = oldt;
+	newt.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+	oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+	fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+
+	ch = getchar();
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+	fcntl(STDIN_FILENO, F_SETFL, oldf);
+
+	if(ch != EOF) {
+		ungetc(ch, stdin); // Push the character back into the input buffer
+		return 1;
+	}
+
+	return 0;
+}
+
 int main(int argc, char* argv[]) {
 	VOP cpu(0, 1024);
 	if (argc == 2)
@@ -175,7 +200,9 @@ int main(int argc, char* argv[]) {
 				SDL_Keycode key = event.key.keysym.sym;
 				if (strncmp(SDL_GetKeyName(key), "Left Shift", 1000) == 0) {
 					upper = true;
-				} else {
+				}
+				
+ 				else {
 					if (upper) {
 						switch (key) {
 							case '1':
@@ -183,9 +210,6 @@ int main(int argc, char* argv[]) {
 								break;
 							case '2':
 								key = '"';
-								break;
-							case '3':
-								key = '#';
 								break;
 							case '4':
 								key = '$';
@@ -218,14 +242,23 @@ int main(int argc, char* argv[]) {
 								key = toupper(key);
 						}
 						cpu.IO[TERMINAL_I] = key;
-					}
-					else
+					} else {
 						cpu.IO[TERMINAL_I] = key;
+					}
 					upper = false;
 				}
 			}
 		}
 		
+		if (cpu.IO[TERMINAL_I_R]) {
+			if (kbhit()) {
+				int x = getchar();
+				if (x == '\n') x = 13;
+				cpu.IO[TERMINAL_I] = x;
+				cpu.IO[TERMINAL_I_R] = 0;
+			}
+		}
+
 		cpu.executeNext();
 		
 		if (--counter == 0) {

@@ -199,6 +199,7 @@ copy_to_line:
 	ld x6, s0
 	call %get_line
 	ld w7, %line_len
+	dec w7
 copy_to_line_l0:
 	peek w1, .s0
 	poke w1, .z7
