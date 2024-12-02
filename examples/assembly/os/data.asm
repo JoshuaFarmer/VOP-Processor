@@ -46,9 +46,6 @@ cmd_get:
 cmd_set:
 	ds "set"
 	db 0
-cmd_deref:
-	ds "deref"
-	db 0
 cmd_is:
 	ds "is"
 	db 0
@@ -93,6 +90,9 @@ cmd_assign:
 	db 0
 cmd_not:
 	ds "not"
+	db 0
+cmd_at:
+	ds "at"
 	db 0
 cmd_exit:
 	ds "exit"

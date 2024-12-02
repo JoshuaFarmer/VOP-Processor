@@ -43,6 +43,20 @@ EXPR_TWO_ARGS:
 	ld x3, a
 	ret
 
+_EXPR_AT:
+	ld s0, x5
+EXPR_AT:
+	advn s0, #3
+	call %FETCH_VALUE
+	ld z6, a
+	push #2, s4
+	pop p1, s4
+	peek w0, z6
+	ld a, w0
+	push p0, s4
+	pop p1, s4
+	ret
+
 _EXPR_AND:
 	ld s0, x5
 EXPR_AND:
@@ -169,6 +183,17 @@ _EXPR_ASSIGN:
 EXPR_ASSIGN:
 	advn s0, #7
 
+	ld w0, s0
+	ld s1, w0
+	ld s7, w0
+	ld s0, %cmd_at
+	call %strcmp
+	cmp #1
+	bz %EXPR_ASSIGN_AT 
+
+	ld w0, s7
+	ld s0, w0
+
 	; get name
 	peek w0, .s0
 	ld a, w0
@@ -177,6 +202,7 @@ EXPR_ASSIGN:
 	inc s0
 	inc s0
 
+EXPR_EVAL:
 	; evaluate
 	call %EXPR
 	ld w7, a
@@ -184,12 +210,31 @@ EXPR_ASSIGN:
 	call %SetVariable
 	ld a, w7
 	ret
+EXPR_ASSIGN_AT:
+	ld w0, s7
+	ld s0, w0
+	advn s0, #3
+
+	call %FETCH_VALUE
+	ld s7, a
+
+	call %EXPR
+	push #2, s4
+	pop p1, s4
+	poke a, s7
+	push p0, s4
+	pop p1, s4
+	ret
 
 _EXPR_EXIT:
 	ld s0, x5
 EXPR_EXIT:
+	popx
+	popw
 	ld x1, %max_line
 	dec x1
+	pushw
+	pushx
 	ret
 
 	; a == line_num
@@ -270,6 +315,12 @@ EXPR:
 	call %strcmp
 	cmp #1
 	bz %_EXPR_IS
+
+	ld s1, x5
+	ld s0, %cmd_at
+	call %strcmp
+	cmp #1
+	bz %_EXPR_AT
 
 	ld s1, x5
 	ld s0, %cmd_jump
