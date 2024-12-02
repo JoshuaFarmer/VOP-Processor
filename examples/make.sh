@@ -5,6 +5,7 @@ python3 as.py -s assembly/type.asm bin/type.vop
 python3 as.py -s assembly/get.asm bin/get.vop
 python3 as.py -s assembly/mul.asm bin/mul.vop
 python3 as.py -s assembly/relative.asm bin/relative.vop
+python3 as.py -s assembly/redo.asm bin/redo.vop
 
 # OS
 cd assembly/os
