@@ -1,0 +1,25 @@
+; define string
+assign at 2 48
+assign at 4 65
+assign at 6 6C
+assign at 8 6C
+assign at A 6F
+assign at C 2C
+assign at E 20
+assign at 10 57
+assign at 12 6F
+assign at 14 72
+assign at 16 6C
+assign at 18 64
+assign at 1A 21
+assign at 1C A
+assign at 1E 0
+
+; print string
+$0 assign A 2
+$1 assign C at $A
+$2 if is $C 0 jump 6
+$3 put $C
+$4 assign A add $A 2
+$5 jump 1
+$6 exit

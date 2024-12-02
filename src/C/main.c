@@ -112,9 +112,10 @@ int main(int argc, char* argv[]) {
 	set_nonblocking_mode();
 
 	bool upper = false;
-	int counter = 128;
+	int counter = 255;
 	while (quit == false && IO[POWER_OFF_IO] == 0x00) {
-		while (SDL_PollEvent(&event) != 0) {
+		// only every OTHER tick.
+		while (counter & 1 && SDL_PollEvent(&event) != 0) {
 			if (event.type == SDL_QUIT) {
 				quit = true;
 			}
@@ -190,7 +191,7 @@ int main(int argc, char* argv[]) {
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderClear(renderer);	
 			draw_buffer();
-			counter = 128;
+			counter = 255;
 		}
 
 		if (IO[SWAP_BUFFERS] == 0x01) {

@@ -49,12 +49,8 @@ EXPR_AT:
 	advn s0, #3
 	call %FETCH_VALUE
 	ld z6, a
-	push #2, s4
-	pop p1, s4
-	peek w0, z6
+	peek w0, .z6
 	ld a, w0
-	push p0, s4
-	pop p1, s4
 	ret
 
 _EXPR_AND:
@@ -170,9 +166,9 @@ _EXPR_PRINT:
 EXPR_PRINT:
 	advn s0, #6
 	call %EXPR
-	pusha
+	pushw
 	call %print_hex
-	popa
+	popw
 	ld s0, %newl
 	ld s1, #2
 	call %PRINT
@@ -219,11 +215,7 @@ EXPR_ASSIGN_AT:
 	ld s7, a
 
 	call %EXPR
-	push #2, s4
-	pop p1, s4
 	poke a, s7
-	push p0, s4
-	pop p1, s4
 	ret
 
 _EXPR_EXIT:
