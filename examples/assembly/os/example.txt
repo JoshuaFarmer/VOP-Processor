@@ -1,6 +1,6 @@
 $0 assign A 41
 $1 put $A
-$2 if is $A add 41 1A jump 10
+$2 if is $A 5B jump 10
 $3 assign A add $A 1
 $4 jump 1
 $10 assign N A
