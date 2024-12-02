@@ -183,14 +183,15 @@ proc_run_w0:
 	bnz %run_line
 run_after_1:
 	inc x1
-run_after_2:
 	cmp x1, x2
 	bnz %proc_run_w0
 	ret
 run_line:
+	pushw
+	pushx
 	call %EXPR
-	cmp w7, #1
-	bz %run_after_2
+	popx
+	popw
 	jmp %run_after_1
 
 proc_list:
@@ -371,7 +372,6 @@ set_var_end:
 __inf__:
 	jmp %__inf__
 shutdown:
-	ld a, #1
 	ld s0, #0
 	out
 	jmp %__inf__

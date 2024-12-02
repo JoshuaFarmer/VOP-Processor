@@ -59,6 +59,10 @@ GETS_END:
 	ld w0, #0
 	poke w0, .z0
 	inc z0
+	poke w0, .z0
+	inc z0
+	poke w0, .z0
+	inc z0
 	ret
 back:
 	ld x7, z0

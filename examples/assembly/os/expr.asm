@@ -103,8 +103,12 @@ _EXPR_JUMP:
 EXPR_JUMP:
 	advn s0, #5
 	call %FETCH_VALUE
+	popx
+	popw
 	ld x1, a
-	ld w7, #1
+	sub x1, #1
+	pushw
+	pushx
 	ret
 
 _EXPR_IF:
@@ -134,6 +138,8 @@ EXPR_INPUT:
 	ld s0, %keyboard
 	call %FETCH_VALUE
 	xor w7, w7
+	ld s0, x5
+	advn s0, #6
 	ret
 
 _EXPR_PUT:
@@ -158,16 +164,14 @@ EXPR_PRINT:
 	call %PRINT
 	ret
 
-	;; ASSIGN A ADD 1 1
-proc_assign:
-	ld x5, %keyboard
 _EXPR_ASSIGN:
 	ld s0, x5
 EXPR_ASSIGN:
 	advn s0, #7
 
 	; get name
-	peek a, s0
+	peek w0, .s0
+	ld a, w0
 	and #255
 	ld x7, a
 	inc s0
@@ -178,6 +182,7 @@ EXPR_ASSIGN:
 	ld w7, a
 	ld a, x7
 	call %SetVariable
+	ld a, w7
 	ret
 
 _EXPR_EXIT:
