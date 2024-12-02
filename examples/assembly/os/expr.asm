@@ -132,14 +132,8 @@ EXPR_INPUT:
 	ld z0, %keyboard
 	call %GETS
 	ld s0, %keyboard
-	pushw
-	call %string_to_hex
-	popw
-	push a, s4
-	ld s0, %newl
-	ld s1, #2
-	call %PRINT
-	pop a, s4
+	call %FETCH_VALUE
+	xor w7, w7
 	ret
 
 _EXPR_PUT:
@@ -306,7 +300,7 @@ EXPR:
 	ld s1, %cmd_input
 	call %strcmp
 	cmp #1
-	bz %_EXPR_INPUT
+	bz %EXPR_INPUT
 
 	ld s0, x5
 	ld s1, %cmd_exit

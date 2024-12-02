@@ -178,6 +178,7 @@ int main(int argc, char* argv[]) {
 			if (kbhit()) {
 				int x = getchar();
 				if (x == '\n') x = 13;
+				if (x == 127) x = '\b';
 				IO[TERMINAL_I] = x;
 				IO[TERMINAL_I_R] = 0;
 			}

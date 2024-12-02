@@ -1,5 +1,6 @@
 	org 1024
 	define stack 65535
+	define call_stack 61440
 	define variables 4096
 	define keyboard 8192
 	define lines 16384
@@ -95,6 +96,7 @@
 	; FIRST PROGRAM TO USE NEW STACK POINTERS!! (s4 to z7)
 	; yes, this cpu has 16 stack pointers/address registers...
 _start:
+	ld s3, %call_stack
 	ld s4, %stack
 	ld s1, #2
 	ld s0, %cat

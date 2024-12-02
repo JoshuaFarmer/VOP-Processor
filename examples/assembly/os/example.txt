@@ -1,7 +1,8 @@
 ; add two given values (forever unless A is 0)
-$0 assign A input
-$1 assign B input
-$2 if is $A 0 exit
-$3 assign S add $A $B
-$4 print $S
-$5 jump 0
+$1 assign A input
+$2 assign B input
+$3 if is $A 0 jump 10
+$4 assign S add $A $B
+$5 print $S
+$6 jump 0
+$10 exit

@@ -29,7 +29,10 @@ get_from_port:
 	ret
 
 GETS:
+	ld z0, %keyboard
 	ld w1, %line_len
+	xor w2, w2
+	poke w2, .z0
 	dec w1
 _GETS:
 	call %GETKEY
@@ -51,6 +54,7 @@ _GETS:
 
 GETS_END:
 	ld s0, %newl
+	ld s1, #2
 	call %PRINT
 	ld w0, #0
 	poke w0, .z0
@@ -59,14 +63,14 @@ GETS_END:
 back:
 	ld x7, z0
 	cmp x7, %keyboard
-	bz %GETS
+	bz %_GETS
 	dec z0
 	out
 	ld a, #32
 	out
 	ld a, #8
 	out
-	jmp %GETS
+	jmp %_GETS
 
 ; s0 == 1, s1 == b
 ; call %strcmp
