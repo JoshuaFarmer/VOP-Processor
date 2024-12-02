@@ -1400,4 +1400,11 @@ void display() {
 		}
 		printf("%.6x: %.2x   %.6x: %.2x   %.6x: %.2x   %.6x: %.2x\n", a, ram[a], a+1, ram[a+1], a+2, ram[a+2], a+3, ram[a+3]);
 	}
+
+	printf("Creating memory dump of 0x0000-0xFFFF in .log\n");
+	FILE* fp = fopen(".log", "wb");
+	if (!fp) { printf("failed to open .log\n"); return; }
+	size_t len = fwrite(ram, 1, 65536, fp);
+	printf("%lu bytes dumped successfully\n", len);
+	fclose(fp);
 }
