@@ -4,7 +4,7 @@
 	define keyboard 8192
 	define lines 16384
 	define line_len 32
-	define max_line 1000
+	define max_line 512
 
 	; for registers that you
 	; cant use "ADD",
