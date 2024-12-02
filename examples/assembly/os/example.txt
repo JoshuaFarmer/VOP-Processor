@@ -1,8 +1,7 @@
-$0 assign A 41
-$1 put $A
-$2 if is $A 5A jump 10
-$3 assign A add $A 1
-$4 jump 1
-$10 assign N A
-$11 put $N
-$12 exit
+; add two given values (forever unless A is 0)
+$0 assign A input
+$1 assign B input
+$2 if is $A 0 exit
+$3 assign S add $A $B
+$4 print $S
+$5 jump 0

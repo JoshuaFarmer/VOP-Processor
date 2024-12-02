@@ -17,27 +17,71 @@
 	end
 
 	macro pusha
-		push a, s3
-		push w0, s3
-		push w1, s3
-		push w2, s3
-		push w3, s3
-		push w4, s3
-		push w5, s3
-		push w6, s3
-		push w7, s3
+		push a, s4
+		push w0, s4
+		push w1, s4
+		push w2, s4
+		push w3, s4
+		push w4, s4
+		push w5, s4
+		push w6, s4
+		push w7, s4
 	end
 
 	macro popa
-		pop w7, s3
-		pop w6, s3
-		pop w5, s3
-		pop w4, s3
-		pop w3, s3
-		pop w2, s3
-		pop w1, s3
-		pop w0, s3
-		pop a, s3
+		pop w7, s4
+		pop w6, s4
+		pop w5, s4
+		pop w4, s4
+		pop w3, s4
+		pop w2, s4
+		pop w1, s4
+		pop w0, s4
+		pop a, s4
+	end
+
+	macro pushw
+		push w0, s4
+		push w1, s4
+		push w2, s4
+		push w3, s4
+		push w4, s4
+		push w5, s4
+		push w6, s4
+		push w7, s4
+	end
+
+	macro popw
+		pop w7, s4
+		pop w6, s4
+		pop w5, s4
+		pop w4, s4
+		pop w3, s4
+		pop w2, s4
+		pop w1, s4
+		pop w0, s4
+	end
+
+	macro pushx
+		push x0, s4
+		push x1, s4
+		push x2, s4
+		push x3, s4
+		push x4, s4
+		push x5, s4
+		push x6, s4
+		push x7, s4
+	end
+
+	macro popx
+		pop x7, s4
+		pop x6, s4
+		pop x5, s4
+		pop x4, s4
+		pop x3, s4
+		pop x2, s4
+		pop x1, s4
+		pop x0, s4
 	end
 
 	macro outx port value
@@ -51,6 +95,7 @@
 	; FIRST PROGRAM TO USE NEW STACK POINTERS!! (s4 to z7)
 	; yes, this cpu has 16 stack pointers/address registers...
 _start:
+	ld s4, %stack
 	ld s1, #2
 	ld s0, %cat
 	call %PRINT

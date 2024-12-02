@@ -1003,20 +1003,22 @@ R_JUMP_LA:
 			case CALL_a16: {
 U_CALL_LA:
 				int x  = fetch(PC++, P0);
-				    x |= fetch(PC++, P0) << 8;
-				write(Sn[3]--, 0xFF, PC);
-				write(Sn[3]--, 0xFF, PC >> 8);
+				x |= fetch(PC++, P0) << 8;
+				poke(PC, Sn[3], P1);
+				Sn[3] -= 2;
 				PC = x;
 				}
 				break;
 			case FAR_CALL_a24: {
 				int x  = fetch(PC++, P0);
 				    x |= fetch(PC++, P0) << 8;
-				write(Sn[3]--, 0xFF, PC);
-				write(Sn[3]--, 0xFF, PC >> 8);
-				write(Sn[3]--, 0xFF, P0);
-				P0 = fetch(PC++, P0);
+				int y  = fetch(PC++, P0);
+				poke(PC, Sn[3], P1);
+				Sn[3] -= 2;
+				poke(P0, Sn[3], P1);
+				Sn[3] -= 2;
 				PC = x;
+				P0 = y;
 				}
 				break;
 
@@ -1042,13 +1044,14 @@ U_CALL_LA:
 
 			case RET: {
 U_RET:
-				PC  = fetch(++Sn[3], 0xFF) << 8;
-				PC |= fetch(++Sn[3], 0xFF);
+				Sn[3] += 2;
+				PC = peek(Sn[3], P1);
 				} break;
 			case FAR_RET: {
-				P0  = fetch(++Sn[3], 0xFF);
-				PC  = fetch(++Sn[3], 0xFF) << 8;
-				PC |= fetch(++Sn[3], 0xFF);
+				Sn[3] += 2;
+				P0 = peek(Sn[3], P1);
+				Sn[3] += 2;
+				PC = peek(Sn[3], P1);
 				} break;
 
 			case RETZ: {

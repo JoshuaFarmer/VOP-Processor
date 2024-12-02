@@ -132,12 +132,14 @@ EXPR_INPUT:
 	ld z0, %keyboard
 	call %GETS
 	ld s0, %keyboard
+	pushw
 	call %string_to_hex
-	push a, s3
+	popw
+	push a, s4
 	ld s0, %newl
 	ld s1, #2
 	call %PRINT
-	pop a, s3
+	pop a, s4
 	ret
 
 _EXPR_PUT:
