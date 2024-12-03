@@ -4,16 +4,20 @@ str $S "Hello, World!\K"
 
 ; N Times
 $0 assign B 7
-
-; Print string
 $1 assign A $S
 $2 assign C at $A
 $3 if is $C 0 jump 7
 $4 put $C
 $5 assign A add $A 2
 $6 jump 2
-
-; Next Print Or Exit?
-$7 if is $B 0 exit
+$7 if is $B 0 jump 10
 $8 assign B sub $B 1
 $9 jump 1
+
+; get user input
+$10 assign A getkey
+$11 if is $A D exit
+$12 put $A
+$13 assign at $S $A
+$14 assign S add $S 1
+$15 jump 10

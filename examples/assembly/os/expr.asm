@@ -185,6 +185,14 @@ EXPR_NOT:
 	not
 	ret
 
+_EXPR_GET_KEY:
+	ld s0, x5
+EXPR_GET_KEY:
+	call %GETKEY
+	ld s0, x5
+	advn s0, #7
+	ret
+
 _EXPR_INPUT:
 	ld s0, x5
 EXPR_INPUT:
@@ -400,6 +408,12 @@ EXPR:
 	call %strcmp
 	cmp #1
 	bz %EXPR_INPUT
+
+	ld s1, x5
+	ld s0, %cmd_getkey
+	call %strcmp
+	cmp #1
+	bz %_EXPR_GET_KEY
 
 	ld s1, x5
 	ld s0, %cmd_exit

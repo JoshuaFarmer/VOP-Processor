@@ -52,6 +52,9 @@ cmd_is:
 cmd_str:
 	ds "str"
 	db 0
+cmd_getkey:
+	ds "getkey"
+	db 0
 cmd_or:
 	ds "or"
 	db 0
