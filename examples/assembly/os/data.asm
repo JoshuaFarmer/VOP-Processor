@@ -49,6 +49,9 @@ cmd_set:
 cmd_is:
 	ds "is"
 	db 0
+cmd_str:
+	ds "str"
+	db 0
 cmd_or:
 	ds "or"
 	db 0

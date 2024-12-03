@@ -20,6 +20,51 @@ FETCH_VALUE_VAR:
 FETCH_VALUE_END:
 	ret
 
+	; ascii 34 '"'
+	; store in S1
+	; from S0
+GET_STRING_LITERAL:
+	ld w1, #255
+	; assume first is '"'
+	inc s0
+	ld a, s1
+GET_STRING_LITERAL_LOOP:
+	peek w0, .s0
+	and w0, w1
+	cmp w0, #34
+	bz %GET_STRING_LITERAL_END
+	cmp w0, #0
+	bz %GET_STRING_LITERAL_END
+	cmp w0, #92
+	bz %GET_STRING_BACKSLASH
+	peek w0, .s0
+	and w0, w1
+GET_STRING_STR:
+	poke w0, .s1
+	advn s0, #1
+	advn s1, #2
+	jmp %GET_STRING_LITERAL_LOOP
+GET_STRING_LITERAL_END:
+	ret
+GET_STRING_BACKSLASH:
+	advn s0, #1
+	peek w0, .s0
+	sub w0, #65
+	jmp %GET_STRING_STR
+
+
+	;
+	;	STORE STRING AT GIVEN VALUE
+	;
+_EXPR_STR:
+	ld s0, x5
+EXPR_STR:
+	advn s0, #4
+	call %FETCH_VALUE
+	ld s1, a
+	call %GET_STRING_LITERAL
+	ret
+
 	; S0 as ptr
 _EXPR_IS:
 	ld s0, x5
@@ -283,6 +328,12 @@ EXPR:
 	call %strcmp
 	cmp #1
 	bz %_EXPR_AND
+
+	ld s1, x5
+	ld s0, %cmd_str
+	call %strcmp
+	cmp #1
+	bz %_EXPR_STR
 
 	ld s1, x5
 	ld s0, %cmd_or

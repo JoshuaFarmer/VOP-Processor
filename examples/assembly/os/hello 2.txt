@@ -1,0 +1,19 @@
+; define string
+assign S 10
+str $S "Hello, World!\K"
+
+; N Times
+$0 assign B 7
+
+; Print string
+$1 assign A $S
+$2 assign C at $A
+$3 if is $C 0 jump 7
+$4 put $C
+$5 assign A add $A 2
+$6 jump 2
+
+; Next Print Or Exit?
+$7 if is $B 0 exit
+$8 assign B sub $B 1
+$9 jump 1
