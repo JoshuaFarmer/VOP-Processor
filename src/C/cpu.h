@@ -11,7 +11,7 @@
 #define SCREEN_SCALE 2
 
 unsigned char  ram[MAX_RAM];
-unsigned char* video_ram = &ram[65536]; // Page 0x1
+unsigned char* video_ram = ram+65536; // Page 0x1
 
 typedef enum {
 	POWER_OFF_IO,
