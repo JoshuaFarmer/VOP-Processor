@@ -20,9 +20,11 @@ FETCH_VALUE_VAR:
 FETCH_VALUE_END:
 	ret
 
+	;
 	; ascii 34 '"'
 	; store in S1
 	; from S0
+	;
 GET_STRING_LITERAL:
 	ld w1, #255
 	; assume first is '"'
@@ -49,6 +51,7 @@ GET_STRING_LITERAL_END:
 GET_STRING_BACKSLASH:
 	advn s0, #1
 	peek w0, .s0
+	; so, \K for newline (don't ask).
 	sub w0, #65
 	jmp %GET_STRING_STR
 
@@ -65,7 +68,10 @@ EXPR_STR:
 	call %GET_STRING_LITERAL
 	ret
 
+	;
 	; S0 as ptr
+	; so, IS $A 32
+	;
 _EXPR_IS:
 	ld s0, x5
 EXPR_IS:
