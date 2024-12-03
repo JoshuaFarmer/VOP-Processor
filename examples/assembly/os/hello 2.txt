@@ -24,3 +24,6 @@ $12 put $A
 $13 assign at $S $A
 $14 assign S add $S 1
 $15 jump 10
+
+ ; run in shell
+run
