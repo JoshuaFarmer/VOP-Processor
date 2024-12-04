@@ -1,20 +1,21 @@
  ; define string (in the shell, not program)
 assign S 10
 str $S "Hello, World!\K"
+$0 assign S 10
 
  ; N Times
-$0 assign B 7
-$1 assign A $S
+$1 assign B 7
+$2 assign A $S
  ; c = *a
-$2 assign C at $A
-$3 if is $C 0 jump 7
+$3 assign C at $A
+$4 if is $C 0 jump 8
  ; printf (char)c
-$4 put $C
-$5 assign A add $A 2
-$6 jump 2
-$7 if is $B 0 jump 10
-$8 assign B sub $B 1
-$9 jump 1
+$5 put $C
+$6 assign A add $A 2
+$7 jump 3
+$8 if is $B 0 jump 10
+$9 assign B sub $B 1
+$A jump 2
 
  ; get user input and put where the "Hello" is (0x10)
  ; (which is in the interrupt table but i don't care.)

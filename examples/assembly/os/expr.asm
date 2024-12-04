@@ -191,6 +191,27 @@ EXPR_NOT:
 	not
 	ret
 
+_EXPR_CALL:
+	ld s0, x5
+EXPR_CALL:
+	advn s0, #5
+	call %EXPR
+	popx
+	push x1, s7
+	ld x1, a
+	sub x1, #1
+	pushx
+	ret
+
+_EXPR_RTS:
+	ld s0, x5
+EXPR_RTS:
+	advn s0, #4
+	popx
+	pop x1, s7
+	pushx
+	ret
+
 _EXPR_GET_KEY:
 	ld s0, x5
 EXPR_GET_KEY:
@@ -420,6 +441,18 @@ EXPR:
 	call %strcmp
 	cmp #1
 	bz %_EXPR_GET_KEY
+
+	ld s1, x5
+	ld s0, %cmd_rts
+	call %strcmp
+	cmp #1
+	bz %_EXPR_RTS
+
+	ld s1, x5
+	ld s0, %cmd_call
+	call %strcmp
+	cmp #1
+	bz %_EXPR_CALL
 
 	ld s1, x5
 	ld s0, %cmd_exit

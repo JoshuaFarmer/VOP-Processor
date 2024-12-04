@@ -1,6 +1,7 @@
 	org 1024
 	define stack 65535
 	define call_stack 61440
+	define lang_call_stack 59392
 	define variables 16000
 	define keyboard 16100
 	define lines 16384
@@ -168,6 +169,7 @@ proc_expr:
 	ret
 	; CMDS
 proc_run:
+	ld s7, %lang_call_stack
 	ld s1, #2
 	ld s0, %run_msg
 	call %PRINT
