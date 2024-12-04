@@ -197,7 +197,7 @@ EXPR_CALL:
 	advn s0, #5
 	call %EXPR
 	popx
-	push x1, s7
+	push x1, z4
 	ld x1, a
 	sub x1, #1
 	pushx
@@ -208,7 +208,7 @@ _EXPR_RTS:
 EXPR_RTS:
 	advn s0, #4
 	popx
-	pop x1, s7
+	pop x1, z4
 	pushx
 	ret
 

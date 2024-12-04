@@ -169,7 +169,7 @@ proc_expr:
 	ret
 	; CMDS
 proc_run:
-	ld s7, %lang_call_stack
+	ld z4, %lang_call_stack
 	ld s1, #2
 	ld s0, %run_msg
 	call %PRINT
