@@ -113,6 +113,7 @@ _inf:
 	jmp %_inf
 
 CMD:
+	ld x1, #65535
 	ld s1, %keyboard
 	ld s0, %cmd_echo
 	call %strcmp
@@ -169,13 +170,14 @@ proc_expr:
 	ret
 	; CMDS
 proc_run:
+	ld x1, #0
+_proc_run:
 	ld z4, %lang_call_stack
 	ld s1, #2
 	ld s0, %run_msg
 	call %PRINT
 
 	; line counter
-	ld x1, #0
 	ld x2, %max_line
 proc_run_w0:
 	ld a, x1
