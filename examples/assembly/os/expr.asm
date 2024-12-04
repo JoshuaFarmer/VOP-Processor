@@ -63,7 +63,7 @@ _EXPR_STR:
 	ld s0, x5
 EXPR_STR:
 	advn s0, #4
-	call %FETCH_VALUE
+	call %EXPR
 	ld s1, a
 	call %GET_STRING_LITERAL
 	ret
@@ -87,9 +87,9 @@ EXPR_IS_EQUAL:
 	ret
 
 EXPR_TWO_ARGS:
-	call %FETCH_VALUE
+	call %EXPR
 	ld z6, a
-	call %FETCH_VALUE
+	call %EXPR
 	ld w7, z6
 	ld x3, a
 	ret
@@ -98,7 +98,7 @@ _EXPR_AT:
 	ld s0, x5
 EXPR_AT:
 	advn s0, #3
-	call %FETCH_VALUE
+	call %EXPR
 	ld z6, a
 	peek w0, .z6
 	ld a, w0
@@ -163,7 +163,7 @@ _EXPR_JUMP:
 	ld s0, x5
 EXPR_JUMP:
 	advn s0, #5
-	call %FETCH_VALUE
+	call %EXPR
 	popx
 	popw
 	ld x1, a
@@ -291,7 +291,7 @@ EXPR_ASSIGN_AT:
 	ld s0, w0
 	advn s0, #3
 
-	call %FETCH_VALUE
+	call %EXPR
 	ld s7, a
 
 	call %EXPR
