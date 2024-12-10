@@ -1,4 +1,4 @@
-; theoretically you can use macros to retarget the assembler (lmao)
+; theoretically you can use macros to retarget the assembler (lmao) as they are resolved before instructions;
 
 ; MACRO NAME <ARGS>
 macro jne x y addr
