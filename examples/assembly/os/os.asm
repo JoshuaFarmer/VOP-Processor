@@ -187,6 +187,13 @@ proc_run_w0:
 	cmp #0
 	bnz %run_line
 run_after_1:
+	ld s0, #3
+	xc a, w7
+	in
+	xc a, w7
+	cmp w7, #96
+	retz
+
 	inc x1
 	cmp x1, x2
 	bnz %proc_run_w0
