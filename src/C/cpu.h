@@ -211,6 +211,9 @@ enum InstructionOpcode {
 	POKE_A_Sn_SRn_N,
 	POKE_A_Sn_ARn_N,
 
+	JL_Rn_Rn_a16,
+	JG_Rn_Rn_a16,
+
 	// 0xF0-F1 LOOPS
 	REP = 0xF0,
 	END = 0xF1
@@ -911,10 +914,10 @@ void executeNext() {
 			break;
 		
 		// JUMPING AND CALLING
-U_JUMP_LA:
 		case JUMP_a16: {
+U_JUMP_LA:
 			int x  = fetch(PC++, P0);
-					x |= fetch(PC++, P0) << 8;
+				 x |= fetch(PC++, P0) << 8;
 			PC = x;
 			}
 			break;
@@ -1325,6 +1328,26 @@ U_RET:
 			int Ridx = fetch(PC++, P0) & 0xF;
 			poke(Acc, Sn[0] + Rn[Ridx], P0);
 		} break;
+
+		case JL_Rn_Rn_a16:
+		{
+			int a = fetch(PC++, P0)&0xF;
+			int b = fetch(PC++, P0)&0xF;
+			if (Rn[a] < Rn[b])
+				goto U_JUMP_LA;
+			PC+=2;
+			break;
+		}
+
+		case JG_Rn_Rn_a16:
+		{
+			int a = fetch(PC++, P0)&0xF;
+			int b = fetch(PC++, P0)&0xF;
+			if (Rn[a] > Rn[b])
+				goto U_JUMP_LA;
+			PC+=2;
+			break;
+		}
 
 		// LOOPS
 		case REP: {

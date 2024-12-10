@@ -178,6 +178,9 @@ opcodes = {
 	"POKEA,.-R":167,
 	"POKEA,.+R":168,
 
+	"JLR,R,#":169,
+	"JGR,R,#":170,
+
 	"REP":0xF0,
 	"END":0xF1,
 }
@@ -194,11 +197,12 @@ def decode(_op, labels, worry, lineNum):
 		
 	if "," in _op:
 		op1 = [_op.split("\\")[0], tmp[0], tmp[1]]
+		if op1[0] == 'JL' or op1[0] == 'JG':
+			op1.append(tmp[2])
 	elif len(tmp) > 1:
 		op1 = [_op.split("\\")[0], tmp[1]]
 	else:
 		op1 = _op.split("\\")
-	
 	retstr = op1[0]
 	for i in range(len(op1)):
 		op = op1

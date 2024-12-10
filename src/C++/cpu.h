@@ -208,6 +208,9 @@ class VOP {
 		POKE_A_Sn_SRn_N,
 		POKE_A_Sn_ARn_N,
 
+		JL_Rn_Rn_a16,
+		JG_Rn_Rn_a16,
+
 		// 0xF0-F1 LOOPS
 		REP = 0xF0,
 		END = 0xF1
@@ -1341,6 +1344,26 @@ U_RET:
 				int Ridx = fetch(PC++, P0) & 0xF;
 				poke(Acc, Sn[0] + Rn[Ridx], P0);
 			} break;
+
+			case JL_Rn_Rn_a16:
+			{
+				int a = fetch(PC++, P0)&0xF;
+				int b = fetch(PC++, P0)&0xF;
+				if (Rn[a] < Rn[b])
+					goto U_JUMP_LA;
+				PC+=2;
+				break;
+			}
+
+			case JG_Rn_Rn_a16:
+			{
+				int a = fetch(PC++, P0)&0xF;
+				int b = fetch(PC++, P0)&0xF;
+				if (Rn[a] > Rn[b])
+					goto U_JUMP_LA;
+				PC+=2;
+				break;
+			}
 
 			// LOOPS
 			case REP: {

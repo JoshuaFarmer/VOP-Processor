@@ -172,6 +172,40 @@ EXPR_JUMP:
 	pushx
 	ret
 
+_EXPR_LESS:
+	ld s0, x5
+EXPR_LESS:
+	advn s0, #5
+	call %EXPR
+	ld w0, a
+	push w0, s4
+	call %EXPR
+	pop w0, s4
+	ld w1, a
+	jl w0, w1, %EXPR_LESS_TRUE
+	ld a, #0
+	ret
+EXPR_LESS_TRUE:
+	ld a, #1
+	ret
+
+_EXPR_GREATER:
+	ld s0, x5
+EXPR_GREATER:
+	advn s0, #8
+	call %EXPR
+	ld w0, a
+	push w0, s4
+	call %EXPR
+	pop w0, s4
+	ld w1, a
+	jg w0, w1, %EXPR_GREATER_TRUE
+	ld a, #0
+	ret
+EXPR_GREATER_TRUE:
+	ld a, #1
+	ret
+
 _EXPR_IF:
 	ld s0, x5
 EXPR_IF:
@@ -453,6 +487,18 @@ EXPR:
 	call %strcmp
 	cmp #1
 	bz %_EXPR_CALL
+
+	ld s1, x5
+	ld s0, %cmd_greater
+	call %strcmp
+	cmp #1
+	bz %_EXPR_GREATER
+
+	ld s1, x5
+	ld s0, %cmd_less
+	call %strcmp
+	cmp #1
+	bz %_EXPR_LESS
 
 	ld s1, x5
 	ld s0, %cmd_exit

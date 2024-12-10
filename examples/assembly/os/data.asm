@@ -109,6 +109,12 @@ cmd_call:
 cmd_rts:
 	ds "rts"
 	db 0
+cmd_less:
+	ds "less"
+	db 0
+cmd_greater:
+	ds "greater"
+	db 0
 list_msg:
 	ds "Listing Program.."
 	db 10
