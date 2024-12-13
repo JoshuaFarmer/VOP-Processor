@@ -214,6 +214,9 @@ enum InstructionOpcode {
 	JL_Rn_Rn_a16,
 	JG_Rn_Rn_a16,
 
+	OUT_RN_RN,
+	IN_RN_RN,
+
 	// 0xF0-F1 LOOPS
 	REP = 0xF0,
 	END = 0xF1
@@ -914,8 +917,8 @@ void executeNext() {
 			break;
 		
 		// JUMPING AND CALLING
-		case JUMP_a16: {
 U_JUMP_LA:
+		case JUMP_a16: {
 			int x  = fetch(PC++, P0);
 				 x |= fetch(PC++, P0) << 8;
 			PC = x;
@@ -1348,6 +1351,20 @@ U_RET:
 			PC+=2;
 			break;
 		}
+
+		case OUT_RN_RN: {
+			int x = fetch(PC++, P0)&15;
+			int y = fetch(PC++, P0)&15;
+			IO[Rn[y]] = Rn[x];
+			}
+			break;
+		case IN_RN_RN: {
+			int x = fetch(PC++, P0)&15;
+			int y = fetch(PC++, P0)&15;
+			Rn[x] = IO[Rn[y]];
+			IO[Rn[y]] = 0;
+			}
+			break;
 
 		// LOOPS
 		case REP: {

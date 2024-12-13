@@ -180,6 +180,9 @@ opcodes = {
 
 	"JLR,R,#":169,
 	"JGR,R,#":170,
+	
+	"OUTR,R":171,
+	"INR,R":172,
 
 	"REP":0xF0,
 	"END":0xF1,
