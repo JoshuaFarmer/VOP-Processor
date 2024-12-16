@@ -13,6 +13,7 @@ macro inf
 endmacro
 
 macro test x
+	; resolved to 1==1 (lol), (yes; parenths are required)
 	if($x==1)
 		ld a,#10
 	endif
