@@ -2,6 +2,7 @@
 from sys import argv
 
 macros = {}
+conditions = {}
 opcodes = {
 	"PUSHA,S":0,
 	"POPA,S":1,
@@ -363,9 +364,13 @@ def first_pass(lines):
 			if l.split(" ")[0] == "include":
 				pass
 			elif l[0] == ';' or l[0] == '!':
-				pass  # Ignore comments
+				pass
 			elif l[-1] == ':':
 				labels[l[0:-1].upper()] = byteOff
+			elif l.split("(")[0].strip() == "if":
+				pass
+			elif l.split("(")[0].strip() == "endif":
+				pass
 			elif l.split(" ")[0] == "org":
 				byteOff = int(l.split(" ")[1])
 			elif l.split(" ")[0] == "db":
@@ -396,6 +401,10 @@ def second_pass(text, labels):
 				continue
 			elif l.split(" ")[0] == "include":
 				continue
+			elif l.split("(")[0].strip() == "if":
+				pass
+			elif l.split("(")[0].strip() == "endif":
+				pass
 			elif l.split(" ")[0] == "define":
 				continue
 			elif l.split(" ")[0] == "db":
@@ -417,10 +426,13 @@ def second_pass(text, labels):
 
 def res_macros(text):
 	macr = []
+	ifclause=[]
+	ifexpr=""
 	in_macro = False
 	macr_name = ""
 	ret = []
 	args = []
+	in_if = False
 	for i in range(len(text)):
 		line = text[i].strip()
 		if line and line.split(" ")[0] == "macro":
@@ -428,7 +440,7 @@ def res_macros(text):
 			macr = []
 			in_macro = True
 			args = line.split(" ")[2:]
-		elif line and line.split(" ")[0] == "end":
+		elif line and line.split(" ")[0] == "endmacro" or line.split(" ")[0] == "end":
 			macros[macr_name] = macr, args
 			in_macro = False
 			macr = []
@@ -459,7 +471,6 @@ def res_macros(text):
 			else:
 				if line.split(" ")[0].strip() in macros:
 					macro = macros[line.split(" ")[0].strip()]
-
 					# arguments
 					_args = line.split(" ")[1:]
 					for i in range(len(_args)):
@@ -470,7 +481,20 @@ def res_macros(text):
 						for i in range(len(macro[1])):
 							if f"${macro[1][i]}" in x:
 								x = x.replace(f"${macro[1][i]}", _args[i])
-						ret.append(x)
+						if x and x.split("(")[0] == "if":
+							ifexpr=x.split("(")[1].split(")")[0]
+							ifclause=[]
+							in_if = True
+						elif x and x.split("(")[0] == "endif":
+							res=eval(ifexpr)
+							if res==True:
+								for y in ifclause:
+									ret.append(y)
+							in_if = False
+						elif in_if:
+							ifclause.append(x)
+						else:
+							ret.append(x)
 				else:
 					ret.append(line)
 	return ret
