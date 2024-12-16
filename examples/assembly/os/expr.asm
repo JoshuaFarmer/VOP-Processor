@@ -7,7 +7,7 @@ FETCH_VALUE:
 	and #255
 	cmp #36
 	bz %FETCH_VALUE_VAR
-	call %atoi
+	call %string_to_hex
 	inc s0
 	jmp %FETCH_VALUE_END
 FETCH_VALUE_VAR:
@@ -281,7 +281,7 @@ EXPR_PRINT:
 	advn s0, #6
 	call %EXPR
 	pushw
-	call %print_decimal
+	call %print_hex
 	popw
 	ld s0, %newl
 	ld s1, #2
