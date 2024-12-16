@@ -7,9 +7,9 @@ macro jne x y addr
 	bnz $addr
 endmacro
 
-macro inf x
-	__inf$x:
-	jmp %__inf$x
+macro inf
+	__inf:
+	jmp %__inf
 endmacro
 
 macro test x
@@ -22,5 +22,5 @@ endmacro
 init:
 	inc w0
 	jne w0, #1, %init
-	inf 0
+	inf
 	test 0
