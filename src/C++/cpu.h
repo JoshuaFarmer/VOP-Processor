@@ -13,6 +13,10 @@ enum {
 	TERMINAL,
 	TERMINAL_I,
 	TERMINAL_I_R, // ready for input
+	DISK_CMD,
+	DISK_DATA,
+	DISK_READY,
+
 };
 
 class VOP {

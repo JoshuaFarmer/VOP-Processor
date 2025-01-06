@@ -19,6 +19,9 @@ typedef enum {
 	TERMINAL,
 	TERMINAL_I,
 	TERMINAL_I_R,
+	DISK_CMD,
+	DISK_DATA,
+	DISK_READY,
 } IO_PORT;
 
 enum InstructionOpcode {
@@ -242,7 +245,7 @@ bool parity = false;
 bool interrupt_mask = false;
 bool data_format = false;
 
-uint8_t fetch(uint16_t offset, uint8_t segment) {
+uint8_t fetch(uint16_t offset, int segment) {
 	size_t addr = ((segment << 16) | offset);
 	if (addr >= MAX_RAM) {
 		return 0;
@@ -251,7 +254,7 @@ uint8_t fetch(uint16_t offset, uint8_t segment) {
 	return ram[addr];
 }
 
-void store(uint16_t offset, uint8_t segment, uint8_t value) {
+void store(uint16_t offset, int segment, uint8_t value) {
 	size_t addr = ((segment << 16) | offset);
 	if (addr >= MAX_RAM) {
 		return;
@@ -260,7 +263,7 @@ void store(uint16_t offset, uint8_t segment, uint8_t value) {
 	ram[addr] = value;
 }
 
-void poke(uint16_t value, uint16_t addr, uint8_t P) {
+void poke(uint16_t value, uint16_t addr, int P) {
 	if (data_format == false) {
 		store(addr, P, value);
 		store(addr+1, P, value  >> 8);
@@ -269,7 +272,7 @@ void poke(uint16_t value, uint16_t addr, uint8_t P) {
 	}
 }
 
-uint16_t peek(uint16_t addr, uint8_t P) {
+uint16_t peek(uint16_t addr, int P) {
 	int value = 0x0000;
 	if (data_format == false) {
 		value |= fetch(addr, P);
