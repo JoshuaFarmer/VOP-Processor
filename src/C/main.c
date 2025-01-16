@@ -190,67 +190,6 @@ int main(int argc, char* argv[]) {
 	bool upper = false;
 	int counter = 255;
 	while (quit == false && IO[POWER_OFF_IO] == 0x00) {
-		// only every OTHER tick.
-		while (counter & 1 && SDL_PollEvent(&event) != 0) {
-			if (event.type == SDL_QUIT) {
-				quit = true;
-			}
-
-			if (event.type == SDL_KEYDOWN) {
-				SDL_Keycode key = event.key.keysym.sym;
-				if (strncmp(SDL_GetKeyName(key), "Left Shift", 1000) == 0) {
-					upper = true;
-				} else {
-					if (upper) {
-						switch (key) {
-							case '1':
-								key = '!';
-								break;
-							case '2':
-								key = '"';
-								break;
-							case '3':
-								key = '#';
-								break;
-							case '4':
-								key = '$';
-								break;
-							case '5':
-								key = '%';
-								break;
-							case '6':
-								key = '^';
-								break;
-							case '7':
-								key = '&';
-								break;
-							case '8':
-								key = '*';
-								break;
-							case '9':
-								key = '(';
-								break;
-							case '0':
-								key = ')';
-								break;
-							case '-':
-								key = '_';
-								break;
-							case '=':
-								key = '+';
-								break;
-							default:
-								key = toupper(key);
-						}
-						IO[TERMINAL_I] = key;
-					}
-					else
-						IO[TERMINAL_I] = key;
-					upper = false;
-				}
-			}
-		}
-		
 		if (IO[TERMINAL_I_R]) {
 			if (kbhit()) {
 				int x = getchar();
@@ -264,6 +203,66 @@ int main(int argc, char* argv[]) {
 		executeNext();
 		
 		if (--counter == 0) {
+			// only every OTHER tick.
+			while (SDL_PollEvent(&event) != 0) {
+				if (event.type == SDL_QUIT) {
+					quit = true;
+				}
+
+				if (event.type == SDL_KEYDOWN) {
+					SDL_Keycode key = event.key.keysym.sym;
+					if (strncmp(SDL_GetKeyName(key), "Left Shift", 1000) == 0) {
+						upper = true;
+					} else {
+						if (upper) {
+							switch (key) {
+								case '1':
+									key = '!';
+									break;
+								case '2':
+									key = '"';
+									break;
+								case '3':
+									key = '#';
+									break;
+								case '4':
+									key = '$';
+									break;
+								case '5':
+									key = '%';
+									break;
+								case '6':
+									key = '^';
+									break;
+								case '7':
+									key = '&';
+									break;
+								case '8':
+									key = '*';
+									break;
+								case '9':
+									key = '(';
+									break;
+								case '0':
+									key = ')';
+									break;
+								case '-':
+									key = '_';
+									break;
+								case '=':
+									key = '+';
+									break;
+								default:
+									key = toupper(key);
+							}
+							IO[TERMINAL_I] = key;
+						}
+						else
+							IO[TERMINAL_I] = key;
+						upper = false;
+					}
+				}
+			}
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderClear(renderer);	
 			draw_buffer();
@@ -275,7 +274,7 @@ int main(int argc, char* argv[]) {
 			IO[SWAP_BUFFERS] = 0;
 		} if (IO[TERMINAL]) {
 			printf("%c", (char)IO[TERMINAL]);
-			fflush(stdout);
+			//fflush(stdout);
 			IO[TERMINAL] = 0;
 		}
 	}
