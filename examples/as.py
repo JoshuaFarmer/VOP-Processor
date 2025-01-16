@@ -366,12 +366,12 @@ def first_pass(lines):
 				pass
 			elif l[-1] == ':':
 				labels[l[0:-1].upper()] = byteOff
+			elif l.split(" ")[0] == "define":
+				pass
 			elif l.split(" ")[0] == "org":
 				byteOff = int(l.split(" ")[1])
 			elif l.split(" ")[0] == "db":
 				byteOff += 1
-			elif l.split(" ")[0] == "define":
-				labels[l.split(" ")[1].upper()] = int(l.split(" ")[2])
 			elif l.split("\"")[0].strip() == "ds":
 				for c in l.split("\"")[1]:
 					byteOff += 1
@@ -397,7 +397,17 @@ def second_pass(text, labels):
 			elif l.split(" ")[0] == "include":
 				continue
 			elif l.split(" ")[0] == "define":
-				continue
+				parts = l.split(" ")
+				label = parts[1].upper()
+				expression = ' '.join(parts[2:])
+				
+				# Replace label references in the expression with their values
+				for key in labels:
+					expression = expression.replace(key, str(labels[key]))
+				
+				# Evaluate the expression
+				value = eval(expression)
+				labels[l.split(" ")[1].upper()] = (value)
 			elif l.split(" ")[0] == "db":
 				byteOff += 1
 				arr.append(int(l.split(" ")[1]))

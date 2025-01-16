@@ -22,6 +22,6 @@ endmacro
 	org 1024
 init:
 	inc w0
-	jne w0, #1, %init
+	jne w0, #1, init
 	inf
 	test 0
