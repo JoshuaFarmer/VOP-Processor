@@ -1,8 +1,6 @@
 # Emulator
 cd vop16
 sh make.sh
-cd ../vop32
-sh make.sh
 cd ..
 echo Built Emulator
 
