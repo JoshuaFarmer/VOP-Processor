@@ -1,0 +1,1 @@
+gcc "src/main.c" -o "bin/vop" -Wall -Wextra -Werror -Wpedantic -lSDL2 -O3 -std=c99

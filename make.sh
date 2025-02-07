@@ -1,2 +1,23 @@
-g++ "src/C++/main.cpp" -o "bin/C++/vop" -Wall -Wextra -Werror -Wpedantic -lSDL2 -O3
-gcc "src/C/main.c" -o "bin/C/vop" -Wall -Wextra -Werror -Wpedantic -lSDL2 -O3 -std=c99
+# Emulator
+cd vop16
+sh make.sh
+cd ../vop32
+sh make.sh
+cd ..
+echo Built Emulator
+
+# Assembly
+python3 assembler.py -s assembly/hi.asm bin/hi.vop
+python3 assembler.py -s assembly/hi_console.asm bin/hi_con.vop
+python3 assembler.py -s assembly/type.asm bin/type.vop
+python3 assembler.py -s assembly/get.asm bin/get.vop
+python3 assembler.py -s assembly/mul.asm bin/mul.vop
+python3 assembler.py -s assembly/relative.asm bin/relative.vop
+python3 assembler.py -s assembly/div10.asm bin/div10.vop
+python3 assembler.py -s assembly/atoi.asm bin/atoi.vop
+
+# OS
+cd assembly/os
+python3 ../../assembler.py -s os.asm ../../bin/os.vop
+cd ../..
+echo Built Tests
