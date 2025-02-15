@@ -14,8 +14,6 @@ python3 assembler.py -s assembly/relative.asm bin/relative.vop
 python3 assembler.py -s assembly/div10.asm bin/div10.vop
 python3 assembler.py -s assembly/atoi.asm bin/atoi.vop
 
-python3 assembler2.0.py -s assembly/test2.asm bin/test2.vop
-
 # OS
 cd assembly/os
 python3 ../../assembler.py -s os.asm ../../bin/os.vop
