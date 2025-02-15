@@ -220,6 +220,8 @@ enum InstructionOpcode {
 	OUT_RN_RN,
 	IN_RN_RN,
 
+	LD_SN_SN,
+
 	// 0xF0-F1 LOOPS
 	REP = 0xF0,
 	END = 0xF1
@@ -592,6 +594,12 @@ void executeNext() {
 			int n1  = fetch(PC++, P0) & 0xF;
 
 			Rn[n0] = Sn[n1];
+			} break;
+                case LD_SN_SN: {
+			int n0  = fetch(PC++, P0) & 0xF;
+			int n1  = fetch(PC++, P0) & 0xF;
+
+			Sn[n0] = Sn[n1];
 			} break;
 		case LD_Sn_Rn: {
 			int n0  = fetch(PC++, P0) & 0xF;

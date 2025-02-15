@@ -274,7 +274,7 @@ int main(int argc, char* argv[]) {
 			IO[SWAP_BUFFERS] = 0;
 		} if (IO[TERMINAL]) {
 			printf("%c", (char)IO[TERMINAL]);
-			//fflush(stdout);
+			fflush(stdout);
 			IO[TERMINAL] = 0;
 		}
 	}

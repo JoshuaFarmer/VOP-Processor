@@ -217,6 +217,7 @@ class VOP {
 
 		OUT_RN_RN,
 		IN_RN_RN,
+		LD_SN_SN,
 
 		// 0xF0-F1 LOOPS
 		REP = 0xF0,
@@ -595,6 +596,12 @@ class VOP {
 				int idx = fetch(PC++, P0);
 				int n0  = idx & 0xF;
 				Sn[n0] = Acc;
+				} break;
+                        case LD_SN_SN: {
+				int n0  = fetch(PC++, P0) & 0xF;
+				int n1  = fetch(PC++, P0) & 0xF;
+
+				Sn[n0] = Sn[n1];
 				} break;
 			case LD_Rn_Sn: {
 				int n0  = fetch(PC++, P0) & 0xF;
