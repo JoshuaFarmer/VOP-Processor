@@ -1,3 +1,13 @@
+#ifndef VIDEO_H
+#define VIDEO_H
+
+#include <SDL2/SDL.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <termios.h>
+#include <unistd.h>
+
 SDL_Window* window = NULL;
 SDL_Surface* screenSurface = NULL;
 SDL_Renderer* renderer = NULL;
@@ -73,3 +83,5 @@ void draw_buffer() {
 	SDL_RenderPresent(renderer);
 	SDL_DestroyTexture(text);
 }
+
+#endifs

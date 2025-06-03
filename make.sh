@@ -1,5 +1,5 @@
 # Emulator
-cd vop16
+cd emulator
 sh make.sh
 cd ..
 echo Built Emulator
@@ -19,3 +19,5 @@ cd assembly/os
 python3 ../../assembler.py -s os.asm ../../bin/os.vop
 cd ../..
 echo Built Tests
+
+./emulator/bin/c/vop bin/os.vop

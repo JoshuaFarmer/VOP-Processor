@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	window = SDL_CreateWindow(
-		"VOP CPU (C)",
+		"VOP CPU",
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		SCREEN_WIDTH*SCREEN_SCALE, SCREEN_HEIGHT*SCREEN_SCALE, SDL_WINDOW_SHOWN
 	);
@@ -188,7 +188,6 @@ int main(int argc, char* argv[]) {
 	set_nonblocking_mode();
 
 	bool upper = false;
-	int counter = 255;
 	while (quit == false && IO[POWER_OFF_IO] == 0x00) {
 		if (IO[TERMINAL_I_R]) {
 			if (kbhit()) {
@@ -202,72 +201,67 @@ int main(int argc, char* argv[]) {
 
 		executeNext();
 		
-		if (--counter == 0) {
-			// only every OTHER tick.
-			while (SDL_PollEvent(&event) != 0) {
-				if (event.type == SDL_QUIT) {
-					quit = true;
-				}
+                while (SDL_PollEvent(&event) != 0) {
+                        if (event.type == SDL_QUIT) {
+                                quit = true;
+                        }
 
-				if (event.type == SDL_KEYDOWN) {
-					SDL_Keycode key = event.key.keysym.sym;
-					if (strncmp(SDL_GetKeyName(key), "Left Shift", 1000) == 0) {
-						upper = true;
-					} else {
-						if (upper) {
-							switch (key) {
-								case '1':
-									key = '!';
-									break;
-								case '2':
-									key = '"';
-									break;
-								case '3':
-									key = '#';
-									break;
-								case '4':
-									key = '$';
-									break;
-								case '5':
-									key = '%';
-									break;
-								case '6':
-									key = '^';
-									break;
-								case '7':
-									key = '&';
-									break;
-								case '8':
-									key = '*';
-									break;
-								case '9':
-									key = '(';
-									break;
-								case '0':
-									key = ')';
-									break;
-								case '-':
-									key = '_';
-									break;
-								case '=':
-									key = '+';
-									break;
-								default:
-									key = toupper(key);
-							}
-							IO[TERMINAL_I] = key;
-						}
-						else
-							IO[TERMINAL_I] = key;
-						upper = false;
-					}
-				}
-			}
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-			SDL_RenderClear(renderer);	
-			draw_buffer();
-			counter = 255;
-		}
+                        if (event.type == SDL_KEYDOWN) {
+                                SDL_Keycode key = event.key.keysym.sym;
+                                if (strncmp(SDL_GetKeyName(key), "Left Shift", 1000) == 0) {
+                                        upper = true;
+                                } else {
+                                        if (upper) {
+                                                switch (key) {
+                                                        case '1':
+                                                                key = '!';
+                                                                break;
+                                                        case '2':
+                                                                key = '"';
+                                                                break;
+                                                        case '3':
+                                                                key = '#';
+                                                                break;
+                                                        case '4':
+                                                                key = '$';
+                                                                break;
+                                                        case '5':
+                                                                key = '%';
+                                                                break;
+                                                        case '6':
+                                                                key = '^';
+                                                                break;
+                                                        case '7':
+                                                                key = '&';
+                                                                break;
+                                                        case '8':
+                                                                key = '*';
+                                                                break;
+                                                        case '9':
+                                                                key = '(';
+                                                                break;
+                                                        case '0':
+                                                                key = ')';
+                                                                break;
+                                                        case '-':
+                                                                key = '_';
+                                                                break;
+                                                        case '=':
+                                                                key = '+';
+                                                                break;
+                                                        default:
+                                                                key = toupper(key);
+                                                }
+                                                IO[TERMINAL_I] = key;
+                                        }
+                                        else
+                                                IO[TERMINAL_I] = key;
+                                        upper = false;
+                                }
+                        }
+                }
+
+                draw_buffer();
 
 		if (IO[SWAP_BUFFERS] == 0x01) {
 			buffbank = !buffbank;
